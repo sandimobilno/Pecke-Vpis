@@ -3,153 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Vpis obiska - Pečke</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: #f4f6f9;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .card {
-      background: #ffffff;
-      padding: 30px 25px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      width: 100%;
-      max-width: 420px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #1a252f;
-      font-size: 24px;
-    }
-    .form-group {
-      margin-bottom: 18px;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #4a5568;
-    }
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #cbd5e0;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.2s;
-    }
-    input:focus {
-      outline: none;
-      border-color: #3182ce;
-      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-    }
-    #status {
-      margin: 15px 0;
-      font-size: 14px;
-      text-align: center;
-      font-weight: 500;
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-      border-radius: 6px;
-      background-color: #edf2f7;
-    }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffffff;
-      background-color: #a0aec0;
-      border: none;
-      border-radius: 8px;
-      cursor: not-allowed;
-      transition: background-color 0.2s, transform 0.1s;
-    }
-    .btn.active {
-      background-color: #2b6cb0;
-      cursor: pointer;
-    }
-    .btn.active:hover {
-      background-color: #2c5282;
-    }
-    .btn.active:active {
-      transform: scale(0.99);
-    }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 400px; margin: 20px auto; padding: 15px; text-align: center; color: #333; }
+    .card { background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input { width: 90%; padding: 12px; margin: 6px 0; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { width: 90%; padding: 14px; margin-top: 10px; font-size: 16px; font-weight: bold; color: white; background-color: #cccccc; border: none; border-radius: 6px; cursor: not-allowed; transition: 0.2s; }
+    button.active { background-color: #28a745; cursor: pointer; }
+    #status { margin-top: 15px; font-size: 14px; font-weight: 600; min-height: 20px; }
+    .edit-link { display: inline-block; margin-top: 12px; font-size: 12px; color: #0066cc; text-decoration: underline; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>Vpis obiska - Pečke</h2>
+    <h2>Vpis obiska</h2>
     
-    <div class="form-group">
-      <label for="ime">Ime</label>
-      <input type="text" id="ime" placeholder="Vnesite ime" required>
-    </div>
-
-    <div class="form-group">
-      <label for="priimek">Priimek</label>
-      <input type="text" id="priimek" placeholder="Vnesite priimek" required>
-    </div>
-
-    <div class="form-group">
-      <label for="email">E-poštni naslov</label>
-      <input type="email" id="email" placeholder="ime.priimek@gmail.com" required>
-    </div>
-
+    <input type="text" id="ime" placeholder="Ime" required>
+    <input type="text" id="priimek" placeholder="Priimek" required>
+    <input type="email" id="email" placeholder="E-poštni naslov" required>
+    
+    <button id="vpisBtn" disabled onclick="oddajVpis()">PREVERJANJE LOKACIJE...</button>
+    
     <div id="status">Pridobivanje GPS lokacije...</div>
-
-    <button id="vpisBtn" class="btn" onclick="oddajVpis()" disabled>PREVERJANJE LOKACIJE...</button>
+    <span class="edit-link" id="resetBtn" style="display:none;" onclick="pobrisiPodatke()">Spremeni moje podatke</span>
   </div>
 
   <script>
-    // Nastavitve ciljne lokacije (Pečke) in polmera
-    const TARGET_LAT = 46.5367;  // Prilagodite svojim točnim koordinatam
-    const TARGET_LNG = 15.5583;  // Prilagodite svojim točnim koordinatam
+    // --- ENOTNE TOČNE KOORDINATE IN RADIJ ---
+    const TARGET_LAT = 46.544306455671325;
+    const TARGET_LNG = 15.509264799233547;
     const MAX_RADIUS_METERS = 100;
 
     let userLat = null;
     let userLng = null;
 
-    // Izračun razdalje med dvema koordinatama (Haversine formula)
     function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371000; // Polmer Zemlje v metrih
+      const R = 6371000;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
     function validateEmail(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
+    window.onload = function() {
+      const sIme = localStorage.getItem("vpis_ime");
+      const sPriimek = localStorage.getItem("vpis_priimek");
+      const sEmail = localStorage.getItem("vpis_email");
+
+      if (sIme && sPriimek && sEmail) {
+        document.getElementById("ime").value = sIme;
+        document.getElementById("priimek").value = sPriimek;
+        document.getElementById("email").value = sEmail;
+        document.getElementById("resetBtn").style.display = "inline-block";
+      }
+
+      preveriGps();
+    };
+
     function preveriGps(callback) {
       const btn = document.getElementById("vpisBtn");
       const status = document.getElementById("status");
 
-      // Onemogočimo gumb med preverjanjem
       btn.disabled = true;
       btn.classList.remove("active");
       btn.innerText = "PREVERJANJE LOKACIJE...";
@@ -165,14 +89,14 @@
               btn.disabled = false;
               btn.classList.add("active");
               btn.innerText = "POTRDI VPIS";
-              status.style.color = "#276749";
+              status.style.color = "green";
               status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
               if (callback) callback(true);
             } else {
               btn.disabled = true;
               btn.classList.remove("active");
               btn.innerText = "VPIS NI OMOGOČEN";
-              status.style.color = "#c53030";
+              status.style.color = "red";
               status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
               if (callback) callback(false);
             }
@@ -183,11 +107,10 @@
             btn.disabled = true;
             btn.classList.remove("active");
             btn.innerText = "VPIS NI OMOGOČEN";
-            status.style.color = "#c53030";
+            status.style.color = "red";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
             if (callback) callback(false);
           },
-          // maximumAge: 0 onemogoči predpomnilnik in prisili brskalnik k pridobivanju SVEŽE lokacije
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
@@ -207,10 +130,9 @@
       preveriGps((veljavno) => {
         if (!veljavno) {
           alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
-          return; // Stroga prekinitev izvajanja
+          return;
         }
 
-        // Dodatna varnostna preverba, če GPS koordinat sploh nismo prejeli
         if (userLat === null || userLng === null) {
           alert("GPS lokacije ni bilo mogoče potrditi. Prosimo, osvežite stran in poskusite znova.");
           return;
@@ -236,7 +158,6 @@
           return;
         }
 
-        // Shranjevanje v lokalni pomnilnik za naslednji obisk
         localStorage.setItem("vpis_ime", ime);
         localStorage.setItem("vpis_priimek", priimek);
         localStorage.setItem("vpis_email", email);
@@ -250,18 +171,17 @@
       });
     }
 
-    // Ob nalaganju strani napolnimo shranjene podatke in preverimo GPS
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedIme = localStorage.getItem("vpis_ime");
-      const savedPriimek = localStorage.getItem("vpis_priimek");
-      const savedEmail = localStorage.getItem("vpis_email");
-
-      if (savedIme) document.getElementById("ime").value = savedIme;
-      if (savedPriimek) document.getElementById("priimek").value = savedPriimek;
-      if (savedEmail) document.getElementById("email").value = savedEmail;
-
-      preveriGps();
-    });
+    function pobrisiPodatke() {
+      if (confirm("Želite izbrisati shranjene podatke s tega telefona?")) {
+        localStorage.removeItem("vpis_ime");
+        localStorage.removeItem("vpis_priimek");
+        localStorage.removeItem("vpis_email");
+        document.getElementById("ime").value = "";
+        document.getElementById("priimek").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("resetBtn").style.display = "none";
+      }
+    }
   </script>
 </body>
 </html>
