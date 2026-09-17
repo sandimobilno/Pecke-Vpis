@@ -31,8 +31,8 @@
 
   <script>
     // --- VNESITE VAŠE TOČNE KOORDINATE IN RADIJ ---
-    const TARGET_LAT = 46.5547; // Spremenite na vašo zemljepisno širino
-    const TARGET_LNG = 15.6459; // Spremenite na vašo zemljepisno dolžino
+    const TARGET_LAT = 46.5412; // Spremenite na vašo zemljepisno širino
+    const TARGET_LNG = 15.5104; // Spremenite na vašo zemljepisno dolžino
     const MAX_RADIUS_METERS = 100; // Radij v metrih
 
     let userLat = null;
@@ -124,7 +124,7 @@
       localStorage.setItem("vpis_priimek", priimek);
       localStorage.setItem("vpis_email", email);
 
-      if (SCRIPT_URL === "SEMPRILEPITE_VAS_GOOGLE_APPS_SCRIPT_URL") {
+      if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec") {
         alert(`Testni vpis uspešen za: ${ime} ${priimek}\n(Povezava z Google Sheets še ni nastavljena).`);
         document.getElementById("resetBtn").style.display = "inline-block";
         return;
