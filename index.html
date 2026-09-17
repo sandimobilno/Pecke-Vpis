@@ -49,7 +49,7 @@
 
     let userLat = null;
     let userLng = null;
-    let isLocationValid = false; // Zastavica za preverjanje ustreznosti lokacije
+    let isLocationValid = false; // Zastavica, ki potrjuje veljavnost lokacije
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -133,7 +133,7 @@
     }
 
     function oddajVpis() {
-      // Preverimo zgolj, ali je bila lokacija ob nalaganju/preverjanju veljavna
+      // Preverimo, ali je bila lokacija uspešno potrjena ob nalaganju
       if (!isLocationValid || userLat === null || userLng === null) {
         alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
         return;
@@ -153,7 +153,6 @@
         return;
       }
 
-      // Preprečimo večkratni klik
       const btn = document.getElementById("vpisBtn");
       btn.disabled = true;
       btn.innerText = "POŠILJANJE...";
