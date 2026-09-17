@@ -31,9 +31,9 @@
 
   <script>
     // --- VNESITE VAŠE TOČNE KOORDINATE IN RADIJ ---
-    const TARGET_LAT = 46.5412; // Spremenite na vašo zemljepisno širino
-    const TARGET_LNG = 15.5104; // Spremenite na vašo zemljepisno dolžino
-    const MAX_RADIUS_METERS = 100; // Radij v metrih
+    const TARGET_LAT = 46.5412;
+    const TARGET_LNG = 15.5104;
+    const MAX_RADIUS_METERS = 100;
 
     let userLat = null;
     let userLng = null;
@@ -108,8 +108,8 @@
         return;
       }
 
-      // V Koraku 2 boste tukaj vstavili URL iz Google Apps Scripta:
-      const SCRIPT_URL = "SEMPRILEPITE_VAS_GOOGLE_APPS_SCRIPT_URL";
+      // Vaš pravi Google Apps Script URL:
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
 
       const payload = {
         ime: ime,
@@ -124,17 +124,16 @@
       localStorage.setItem("vpis_priimek", priimek);
       localStorage.setItem("vpis_email", email);
 
-      if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec") {
-        alert(`Testni vpis uspešen za: ${ime} ${priimek}\n(Povezava z Google Sheets še ni nastavljena).`);
-        document.getElementById("resetBtn").style.display = "inline-block";
-        return;
-      }
-
+      // Pošiljanje podatkov v Google Sheets
       fetch(SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
       })
-      .then(res => {
+      .then(() => {
         alert(`Uspešno vpisani: ${ime} ${priimek}`);
         document.getElementById("resetBtn").style.display = "inline-block";
       })
