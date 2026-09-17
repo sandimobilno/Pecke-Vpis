@@ -108,7 +108,6 @@
         return;
       }
 
-      // Vaš pravi Google Apps Script URL:
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
 
       const payload = {
@@ -124,12 +123,12 @@
       localStorage.setItem("vpis_priimek", priimek);
       localStorage.setItem("vpis_email", email);
 
-      // Pošiljanje podatkov v Google Sheets
+      // Pravilno nastavljena glava prepreči blokado zahtevka v Google Apps Scriptu
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=utf-8"
         },
         body: JSON.stringify(payload)
       })
