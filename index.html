@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vpis Obiska</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 400px; margin: 20px auto; padding: 15px; text-align: center; color: #333; }
+    .card { background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input { width: 90%; padding: 12px; margin: 6px 0; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { width: 90%; padding: 14px; margin-top: 10px; font-size: 16px; font-weight: bold; color: white; background-color: #cccccc; border: none; border-radius: 6px; cursor: not-allowed; transition: 0.2s; }
+    button.active { background-color: #28a745; cursor: pointer; }
+    #status { margin-top: 15px; font-size: 14px; font-weight: 600; }
+    .edit-link { display: inline-block; margin-top: 12px; font-size: 12px; color: #0066cc; text-decoration: underline; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Vpis obiska</h2>
+    
+    <input type="text" id="ime" placeholder="Ime" required>
+    <input type="text" id="priimek" placeholder="Priimek" required>
+    <input type="email" id="email" placeholder="E-poštni naslov" required>
+    
+    <button id="vpisBtn" disabled onclick="oddajVpis()">PREVERJANJE LOKACIJE...</button>
+    
+    <div id="status">Pridobivanje GPS lokacije...</div>
+    <span class="edit-link" id="resetBtn" style="display:none;" onclick="pobrisiPodatke()">Spremeni moje podatke</span>
+  </div>
+
+  <script>
+    // --- VNESITE VAŠE TOČNE KOORDINATE IN RADIJ ---
+    const TARGET_LAT = 46.5547; // Spremenite na vašo zemljepisno širino
+    const TARGET_LNG = 15.6459; // Spremenite na vašo zemljepisno dolžino
+    const MAX_RADIUS_METERS = 100; // Radij v metrih
+
+    let userLat = null;
+    let userLng = null;
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    window.onload = function() {
+      const sIme = localStorage.getItem("vpis_ime");
+      const sPriimek = localStorage.getItem("vpis_priimek");
+      const sEmail = localStorage.getItem("vpis_email");
+
+      if (sIme && sPriimek && sEmail) {
+        document.getElementById("ime").value = sIme;
+        document.getElementById("priimek").value = sPriimek;
+        document.getElementById("email").value = sEmail;
+        document.getElementById("resetBtn").style.display = "inline-block";
+      }
+
+      preveriGps();
+    };
+
+    function preveriGps() {
+      const btn = document.getElementById("vpisBtn");
+      const status = document.getElementById("status");
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            const dist = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+
+            if (dist <= MAX_RADIUS_METERS) {
+              btn.disabled = false;
+              btn.classList.add("active");
+              btn.innerText = "POTRDI VPIS";
+              status.style.color = "green";
+              status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
+            } else {
+              btn.disabled = true;
+              btn.innerText = "VPIS NI OMOGOČEN";
+              status.style.color = "red";
+              status.innerText = `Ste zunaj območja (${dist} m od točke, max 100 m).`;
+            }
+          },
+          (err) => {
+            status.style.color = "red";
+            status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        status.innerText = "Vaš brskalnik ne podpira geolokacije.";
+      }
+    }
+
+    function oddajVpis() {
+      const ime = document.getElementById("ime").value.trim();
+      const priimek = document.getElementById("priimek").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!ime || !priimek || !email) {
+        alert("Prosimo, izpolnite vsa polja!");
+        return;
+      }
+
+      // V Koraku 2 boste tukaj vstavili URL iz Google Apps Scripta:
+      const SCRIPT_URL = "SEMPRILEPITE_VAS_GOOGLE_APPS_SCRIPT_URL";
+
+      const payload = {
+        ime: ime,
+        priimek: priimek,
+        email: email,
+        lat: userLat,
+        lng: userLng,
+        razdalja: Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG))
+      };
+
+      localStorage.setItem("vpis_ime", ime);
+      localStorage.setItem("vpis_priimek", priimek);
+      localStorage.setItem("vpis_email", email);
+
+      if (SCRIPT_URL === "SEMPRILEPITE_VAS_GOOGLE_APPS_SCRIPT_URL") {
+        alert(`Testni vpis uspešen za: ${ime} ${priimek}\n(Povezava z Google Sheets še ni nastavljena).`);
+        document.getElementById("resetBtn").style.display = "inline-block";
+        return;
+      }
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => {
+        alert(`Uspešno vpisani: ${ime} ${priimek}`);
+        document.getElementById("resetBtn").style.display = "inline-block";
+      })
+      .catch(err => {
+        alert("Napaka pri pošiljanju podatkov. Poskusite znova.");
+      });
+    }
+
+    function pobrisiPodatke() {
+      if (confirm("Želite izbrisati shranjene podatke s tega telefona?")) {
+        localStorage.removeItem("vpis_ime");
+        localStorage.removeItem("vpis_priimek");
+        localStorage.removeItem("vpis_email");
+        document.getElementById("ime").value = "";
+        document.getElementById("priimek").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("resetBtn").style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
