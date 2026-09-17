@@ -30,7 +30,7 @@
   </div>
 
   <script>
-    // --- VNESITE VAŠE TOČNE KOORDINATE IN RADIJ ---
+    // --- KOORDINATE IN RADIJ ---
     const TARGET_LAT = 46.5412;
     const TARGET_LNG = 15.5104;
     const MAX_RADIUS_METERS = 100;
@@ -99,8 +99,6 @@
     }
 
     function oddajVpis() {
-      alert("1. Klik na gumb zaznan! Pošiljam podatke...");
-
       const ime = document.getElementById("ime").value.trim();
       const priimek = document.getElementById("priimek").value.trim();
       const email = document.getElementById("email").value.trim();
@@ -119,18 +117,16 @@
       const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
       const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
 
-      alert("2. URL za pošiljanje:\n" + fullUrl);
-
       fetch(fullUrl, {
         method: "GET",
         mode: "no-cors"
       })
       .then(() => {
-        alert(`3. Uspešno poslano! Vpisani: ${ime} ${priimek}`);
+        alert(`Uspešno vpisani: ${ime} ${priimek}`);
         document.getElementById("resetBtn").style.display = "inline-block";
       })
       .catch(err => {
-        alert("Napaka pri pošiljanju: " + err);
+        alert("Napaka pri pošiljanju podatkov. Poskusite znova.");
       });
     }
 
