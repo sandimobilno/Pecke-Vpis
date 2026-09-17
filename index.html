@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Navodila brskalniku, da ne shranjuje predpomnilnika (Cache) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Vpis Obiska</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; max-width: 400px; margin: 20px auto; padding: 15px; text-align: center; color: #333; }
@@ -30,9 +34,10 @@
   </div>
 
   <script>
-    const TARGET_LAT = 46.54430820350639;
-    const TARGET_LNG = 15.509262258055951;
-    const MAX_RADIUS_METERS = 50;
+    // --- KOORDINATE IN RADIJ ---
+    const TARGET_LAT = 46.5412;
+    const TARGET_LNG = 15.5104;
+    const MAX_RADIUS_METERS = 100;
 
     let userLat = null;
     let userLng = null;
@@ -62,7 +67,7 @@
       preveriGps();
     };
 
-    function preveriGps() {
+    function preveriGps(callback) {
       const btn = document.getElementById("vpisBtn");
       const status = document.getElementById("status");
 
@@ -79,45 +84,65 @@
               btn.innerText = "POTRDI VPIS";
               status.style.color = "green";
               status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
+              if (callback) callback(true);
             } else {
               btn.disabled = true;
+              btn.classList.remove("active");
               btn.innerText = "VPIS NI OMOGOČEN";
               status.style.color = "red";
-              status.innerText = `Ste zunaj območja (${dist} m od točke, max 100 m).`;
+              status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
+              if (callback) callback(false);
             }
           },
           (err) => {
+            btn.disabled = true;
+            btn.classList.remove("active");
             status.style.color = "red";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
+            if (callback) callback(false);
           },
-          { enableHighAccuracy: true, timeout: 10000 }
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
         status.innerText = "Vaš brskalnik ne podpira geolokacije.";
+        if (callback) callback(false);
       }
     }
 
     function oddajVpis() {
-      const ime = document.getElementById("ime").value.trim();
-      const priimek = document.getElementById("priimek").value.trim();
-      const email = document.getElementById("email").value.trim();
+      const btn = document.getElementById("vpisBtn");
+      btn.disabled = true;
+      btn.innerText = "PREVERJANJE LOKACIJE...";
 
-      if (!ime || !priimek || !email) {
-        alert("Prosimo, izpolnite vsa polja!");
-        return;
-      }
+      // Ponovno preverimo GPS tik pred pošiljanjem
+      preveriGps((veljavno) => {
+        if (!veljavno) {
+          alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinate ali pa ste zunaj dovoljenega območja.");
+          return;
+        }
 
-      localStorage.setItem("vpis_ime", ime);
-      localStorage.setItem("vpis_priimek", priimek);
-      localStorage.setItem("vpis_email", email);
+        const ime = document.getElementById("ime").value.trim();
+        const priimek = document.getElementById("priimek").value.trim();
+        const email = document.getElementById("email").value.trim();
 
-      const razdalja = userLat && userLng ? Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG)) : "";
+        if (!ime || !priimek || !email) {
+          alert("Prosimo, izpolnite vsa polja!");
+          btn.disabled = false;
+          btn.innerText = "POTRDI VPIS";
+          return;
+        }
 
-      const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
+        localStorage.setItem("vpis_ime", ime);
+        localStorage.setItem("vpis_priimek", priimek);
+        localStorage.setItem("vpis_email", email);
 
-      // Neposredna preusmeritev okna
-      window.location.href = fullUrl;
+        const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+
+        const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
+        const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
+
+        window.location.href = fullUrl;
+      });
     }
 
     function pobrisiPodatke() {
