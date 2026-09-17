@@ -49,6 +49,7 @@
 
     let userLat = null;
     let userLng = null;
+    let isLocationValid = false; // Zastavica za preverjanje ustreznosti lokacije
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -79,13 +80,14 @@
       preveriGps();
     };
 
-    function preveriGps(callback) {
+    function preveriGps() {
       const btn = document.getElementById("vpisBtn");
       const status = document.getElementById("status");
 
       btn.disabled = true;
       btn.classList.remove("active");
       btn.innerText = "PREVERJANJE LOKACIJE...";
+      isLocationValid = false;
 
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -100,84 +102,72 @@
               btn.innerText = "POTRDI VPIS";
               status.style.color = "green";
               status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
-              if (callback) callback(true);
+              isLocationValid = true;
             } else {
               btn.disabled = true;
               btn.classList.remove("active");
               btn.innerText = "VPIS NI OMOGOČEN";
               status.style.color = "red";
               status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
-              if (callback) callback(false);
+              isLocationValid = false;
             }
           },
           (err) => {
             userLat = null;
             userLng = null;
+            isLocationValid = false;
             btn.disabled = true;
             btn.classList.remove("active");
             btn.innerText = "VPIS NI OMOGOČEN";
             status.style.color = "red";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
-            if (callback) callback(false);
           },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 3000 }
         );
       } else {
         btn.disabled = true;
         btn.classList.remove("active");
         status.innerText = "Vaš brskalnik ne podpira geolokacije.";
-        if (callback) callback(false);
+        isLocationValid = false;
       }
     }
 
     function oddajVpis() {
+      // Preverimo zgolj, ali je bila lokacija ob nalaganju/preverjanju veljavna
+      if (!isLocationValid || userLat === null || userLng === null) {
+        alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
+        return;
+      }
+
+      const ime = document.getElementById("ime").value.trim();
+      const priimek = document.getElementById("priimek").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+
+      if (!ime || !priimek || !email) {
+        alert("Prosimo, izpolnite vsa polja!");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        alert("Prosimo, vnesite veljaven e-poštni naslov!");
+        return;
+      }
+
+      // Preprečimo večkratni klik
       const btn = document.getElementById("vpisBtn");
       btn.disabled = true;
-      btn.classList.remove("active");
-      btn.innerText = "PREVERJANJE LOKACIJE...";
+      btn.innerText = "POŠILJANJE...";
 
-      preveriGps((veljavno) => {
-        if (!veljavno) {
-          alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
-          return;
-        }
+      localStorage.setItem("vpis_ime", ime);
+      localStorage.setItem("vpis_priimek", priimek);
+      localStorage.setItem("vpis_email", email);
 
-        if (userLat === null || userLng === null) {
-          alert("GPS lokacije ni bilo mogoče potrditi. Prosimo, osvežite stran in poskusite znova.");
-          return;
-        }
+      const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
-        const ime = document.getElementById("ime").value.trim();
-        const priimek = document.getElementById("priimek").value.trim();
-        const email = document.getElementById("email").value.trim().toLowerCase();
+      const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
+      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat)}&lng=${encodeURIComponent(userLng)}&razdalja=${encodeURIComponent(razdalja)}`;
 
-        if (!ime || !priimek || !email) {
-          alert("Prosimo, izpolnite vsa polja!");
-          btn.disabled = false;
-          btn.classList.add("active");
-          btn.innerText = "POTRDI VPIS";
-          return;
-        }
-
-        if (!validateEmail(email)) {
-          alert("Prosimo, vnesite veljaven e-poštni naslov!");
-          btn.disabled = false;
-          btn.classList.add("active");
-          btn.innerText = "POTRDI VPIS";
-          return;
-        }
-
-        localStorage.setItem("vpis_ime", ime);
-        localStorage.setItem("vpis_priimek", priimek);
-        localStorage.setItem("vpis_email", email);
-
-        const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
-
-        const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-        const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
-
-        window.location.href = fullUrl;
-      });
+      window.location.href = fullUrl;
     }
 
     function pobrisiPodatke() {
