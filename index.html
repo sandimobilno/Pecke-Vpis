@@ -19,11 +19,22 @@
   <div class="card">
     <h2>Vpis obiska</h2>
     
-    <input type="text" id="ime" placeholder="Ime" required>
-    <input type="text" id="priimek" placeholder="Priimek" required>
-    <input type="email" id="email" placeholder="E-poštni naslov" required>
-    
-    <button id="vpisBtn" disabled onclick="oddajVpis()">PREVERJANJE LOKACIJE...</button>
+    <!-- Nevidni iframe prepreči preusmeritev strani ob oddaji -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+    <!-- Klasični HTML obrazec -->
+    <form id="vpisForm" action="https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec" method="GET" target="hidden_iframe" onsubmit="pripraviPodatke(event)">
+      <input type="text" id="ime" name="ime" placeholder="Ime" required>
+      <input type="text" id="priimek" name="priimek" placeholder="Priimek" required>
+      <input type="email" id="email" name="email" placeholder="E-poštni naslov" required>
+      
+      <!-- Skrita polja za geolokacijo -->
+      <input type="hidden" id="lat" name="lat">
+      <input type="hidden" id="lng" name="lng">
+      <input type="hidden" id="razdalja" name="razdalja">
+      
+      <button type="submit" id="vpisBtn" disabled>PREVERJANJE LOKACIJE...</button>
+    </form>
     
     <div id="status">Pridobivanje GPS lokacije...</div>
     <span class="edit-link" id="resetBtn" style="display:none;" onclick="pobrisiPodatke()">Spremeni moje podatke</span>
@@ -97,14 +108,15 @@
       }
     }
 
-    function oddajVpis() {
+    function pripraviPodatke(e) {
       const ime = document.getElementById("ime").value.trim();
       const priimek = document.getElementById("priimek").value.trim();
       const email = document.getElementById("email").value.trim();
 
       if (!ime || !priimek || !email) {
         alert("Prosimo, izpolnite vsa polja!");
-        return;
+        e.preventDefault();
+        return false;
       }
 
       localStorage.setItem("vpis_ime", ime);
@@ -113,15 +125,15 @@
 
       const razdalja = userLat && userLng ? Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG)) : "";
 
-      const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
+      document.getElementById("lat").value = userLat || '';
+      document.getElementById("lng").value = userLng || '';
+      document.getElementById("razdalja").value = razdalja;
 
-      // Namesto fetch() uporabimo Image element, ki zaobide vse mobilne CORS blokade
-      const img = new Image();
-      img.src = fullUrl;
-
-      alert(`Uspešno vpisani: ${ime} ${priimek}`);
-      document.getElementById("resetBtn").style.display = "inline-block";
+      // Obveščanje uporabnika po uspešni oddaji v nevidni iframe
+      setTimeout(() => {
+        alert(`Uspešno vpisani: ${ime} ${priimek}`);
+        document.getElementById("resetBtn").style.display = "inline-block";
+      }, 500);
     }
 
     function pobrisiPodatke() {
