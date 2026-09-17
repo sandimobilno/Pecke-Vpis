@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Navodila brskalniku, da ne shranjuje predpomnilnika (Cache) -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -127,9 +128,10 @@
           return;
         }
 
+        // Preberemo vrednosti, odstranimo presledke in pretvorimo email v male črke
         const ime = document.getElementById("ime").value.trim();
         const priimek = document.getElementById("priimek").value.trim();
-        const email = document.getElementById("email").value.trim();
+        const email = document.getElementById("email").value.trim().toLowerCase();
 
         if (!ime || !priimek || !email) {
           alert("Prosimo, izpolnite vsa polja!");
