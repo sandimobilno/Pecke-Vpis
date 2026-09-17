@@ -30,7 +30,6 @@
   </div>
 
   <script>
-    // --- KOORDINATE IN RADIJ ---
     const TARGET_LAT = 46.5412;
     const TARGET_LNG = 15.5104;
     const MAX_RADIUS_METERS = 100;
@@ -117,17 +116,12 @@
       const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
       const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
 
-      fetch(fullUrl, {
-        method: "GET",
-        mode: "no-cors"
-      })
-      .then(() => {
-        alert(`Uspešno vpisani: ${ime} ${priimek}`);
-        document.getElementById("resetBtn").style.display = "inline-block";
-      })
-      .catch(err => {
-        alert("Napaka pri pošiljanju podatkov. Poskusite znova.");
-      });
+      // Namesto fetch() uporabimo Image element, ki zaobide vse mobilne CORS blokade
+      const img = new Image();
+      img.src = fullUrl;
+
+      alert(`Uspešno vpisani: ${ime} ${priimek}`);
+      document.getElementById("resetBtn").style.display = "inline-block";
     }
 
     function pobrisiPodatke() {
