@@ -163,8 +163,12 @@
 
       const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
+      // Zaokrožitev koordinat na 4 decimalna mesta
+      const latFormatted = Number(userLat).toFixed(4);
+      const lngFormatted = Number(userLng).toFixed(4);
+
       const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat)}&lng=${encodeURIComponent(userLng)}&razdalja=${encodeURIComponent(razdalja)}`;
+      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(latFormatted)}&lng=${encodeURIComponent(lngFormatted)}&razdalja=${encodeURIComponent(razdalja)}`;
 
       window.location.href = fullUrl;
     }
