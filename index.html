@@ -110,27 +110,27 @@
 
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
 
-      const payload = {
-        ime: ime,
-        priimek: priimek,
-        email: email,
-        lat: userLat,
-        lng: userLng,
-        razdalja: Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG))
-      };
-
+      // Shranjevanje v lokalni pomnilnik telefona
       localStorage.setItem("vpis_ime", ime);
       localStorage.setItem("vpis_priimek", priimek);
       localStorage.setItem("vpis_email", email);
 
-      // Pravilno nastavljena glava prepreči blokado zahtevka v Google Apps Scriptu
+      // Priprava podatkov v form-encoded formatu za zanesljivo pošiljanje
+      const formData = new URLSearchParams();
+      formData.append("ime", ime);
+      formData.append("priimek", priimek);
+      formData.append("email", email);
+      formData.append("lat", userLat || "");
+      formData.append("lng", userLng || "");
+      formData.append("razdalja", Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG)));
+
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8"
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: JSON.stringify(payload)
+        body: formData.toString()
       })
       .then(() => {
         alert(`Uspešno vpisani: ${ime} ${priimek}`);
