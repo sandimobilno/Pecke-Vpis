@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Navodila brskalniku, da ne shranjuje predpomnilnika (Cache) -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -97,6 +96,7 @@
           (err) => {
             btn.disabled = true;
             btn.classList.remove("active");
+            btn.innerText = "VPIS NI OMOGOČEN";
             status.style.color = "red";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
             if (callback) callback(false);
@@ -104,20 +104,26 @@
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
+        btn.disabled = true;
+        btn.classList.remove("active");
         status.innerText = "Vaš brskalnik ne podpira geolokacije.";
         if (callback) callback(false);
       }
     }
 
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
     function oddajVpis() {
       const btn = document.getElementById("vpisBtn");
       btn.disabled = true;
+      btn.classList.remove("active");
       btn.innerText = "PREVERJANJE LOKACIJE...";
 
-      // Ponovno preverimo GPS tik pred pošiljanjem
       preveriGps((veljavno) => {
         if (!veljavno) {
-          alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinate ali pa ste zunaj dovoljenega območja.");
+          alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
           return;
         }
 
@@ -128,6 +134,15 @@
         if (!ime || !priimek || !email) {
           alert("Prosimo, izpolnite vsa polja!");
           btn.disabled = false;
+          btn.classList.add("active");
+          btn.innerText = "POTRDI VPIS";
+          return;
+        }
+
+        if (!validateEmail(email)) {
+          alert("Prosimo, vnesite veljaven e-poštni naslov!");
+          btn.disabled = false;
+          btn.classList.add("active");
           btn.innerText = "POTRDI VPIS";
           return;
         }
