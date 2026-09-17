@@ -108,29 +108,18 @@
         return;
       }
 
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-
-      // Shranjevanje v lokalni pomnilnik telefona
       localStorage.setItem("vpis_ime", ime);
       localStorage.setItem("vpis_priimek", priimek);
       localStorage.setItem("vpis_email", email);
 
-      // Priprava podatkov v form-encoded formatu za zanesljivo pošiljanje
-      const formData = new URLSearchParams();
-      formData.append("ime", ime);
-      formData.append("priimek", priimek);
-      formData.append("email", email);
-      formData.append("lat", userLat || "");
-      formData.append("lng", userLng || "");
-      formData.append("razdalja", Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG)));
+      const razdalja = userLat && userLng ? Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG)) : "";
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: formData.toString()
+      const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
+      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(userLat || '')}&lng=${encodeURIComponent(userLng || '')}&razdalja=${encodeURIComponent(razdalja)}`;
+
+      fetch(fullUrl, {
+        method: "GET",
+        mode: "no-cors"
       })
       .then(() => {
         alert(`Uspešno vpisani: ${ime} ${priimek}`);
