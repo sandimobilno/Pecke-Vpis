@@ -3,370 +3,358 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>Vpis obiska - Pečke</title>
+  <title>Vpisna knjiga - Pečke</title>
   <style>
+    :root {
+      --primary-color: #2c5e3b;
+      --primary-hover: #1e3f27;
+      --bg-color: #f4f7f5;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #dddddd;
+      --error-color: #d9534f;
+      --success-color: #5cb85c;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-      max-width: 420px; 
-      margin: 0 auto; 
-      padding: 20px 15px; 
-      text-align: center; 
-      color: #2c3e50; 
-      background-color: #f0f4f8;
-    }
-    .card { 
-      background: #ffffff; 
-      padding: 24px 20px; 
-      border-radius: 16px; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-    }
-    h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      color: #1a252f;
-      font-size: 22px;
-    }
-    input { 
-      width: 100%; 
-      padding: 13px 15px; 
-      margin: 6px 0; 
-      font-size: 15px; 
-      border: 1.5px solid #dcdfe6; 
-      border-radius: 10px; 
-      background-color: #fcfcfc;
-      transition: border-color 0.2s, background-color 0.2s;
-    }
-    input:focus {
-      outline: none;
-      border-color: #0056b3;
-      background-color: #ffffff;
-    }
-    
-    .nacin-label {
-      display: block;
-      margin-top: 18px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #4a5568;
-      text-align: left;
-    }
-    .nacin-container {
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
       display: flex;
-      justify-content: space-between;
-      width: 100%;
-      margin-bottom: 15px;
-      gap: 8px;
-    }
-    .nacin-btn {
-      flex: 1;
-      padding: 12px 6px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #0056b3;
-      background-color: #f0f7ff;
-      border: 1.5px solid #b8d9ff;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 4px;
-    }
-    .nacin-btn:active {
-      transform: scale(0.98);
-    }
-    .nacin-btn.selected {
-      background-color: #0056b3;
-      color: #ffffff;
-      border-color: #0056b3;
-      box-shadow: 0 3px 8px rgba(0, 86, 179, 0.25);
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
 
-    .btn { 
-      width: 100%; 
-      padding: 15px; 
-      margin-top: 10px; 
-      font-size: 16px; 
-      font-weight: 700; 
-      color: #888888; 
-      background-color: #e2e8f0; 
-      border: none; 
-      border-radius: 10px; 
-      cursor: not-allowed; 
-      transition: all 0.2s ease; 
-    }
-    /* Aktiven zelen gumb - vidljiv samo ob vseh izpolnjenih pogojih */
-    .btn.active { 
-      background-color: #28a745; 
-      color: #ffffff;
-      cursor: pointer; 
-      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-    }
-    .btn.active:active {
-      transform: scale(0.99);
-    }
-    
-    .btn-secondary { 
-      display: block; 
-      width: 100%; 
-      margin: 12px auto 0 auto; 
-      padding: 13px; 
-      font-size: 15px; 
-      font-weight: 700; 
-      color: #0056b3; 
-      background-color: #ffffff; 
-      border: 1.5px solid #0056b3; 
-      border-radius: 10px; 
-      text-decoration: none; 
-      transition: all 0.2s ease; 
-    }
-    .btn-secondary:active { 
-      background-color: #f0f7ff; 
-      transform: scale(0.99);
+    .container {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 450px;
     }
 
-    #status { 
-      margin-top: 18px; 
-      font-size: 14px; 
-      font-weight: 600; 
-      min-height: 20px; 
-      line-height: 1.4;
-    }
-    .edit-link { 
-      display: inline-block; 
-      margin-top: 14px; 
-      font-size: 13px; 
-      color: #0056b3; 
-      text-decoration: underline; 
-      cursor: pointer; 
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
     }
 
-    .footer-copyright {
-      margin-top: 25px;
+    .header h1 {
+      color: var(--primary-color);
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .radio-option {
+      flex: 1;
+    }
+
+    .radio-option input {
+      display: none;
+    }
+
+    .radio-option label {
+      display: block;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: normal;
+      transition: all 0.2s;
+    }
+
+    .radio-option input:checked + label {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    #status-box {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    .status-info {
+      background-color: #e8f4f8;
+      color: #1d6f8a;
+      border: 1px solid #bce8f1;
+    }
+
+    .status-error {
+      background-color: #f2dede;
+      color: var(--error-color);
+      border: 1px solid #ebccd1;
+    }
+
+    .status-success {
+      background-color: #dff0d8;
+      color: var(--success-color);
+      border: 1px solid #d6e9c6;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
       font-size: 12px;
-      color: #8898aa;
-      font-weight: 500;
+      color: #888;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Vpis obiska</h2>
-    
-    <input type="text" id="ime" placeholder="Ime" oninput="preveriPogoje()" required>
-    <input type="text" id="priimek" placeholder="Priimek" oninput="preveriPogoje()" required>
-    <input type="email" id="email" placeholder="E-poštni naslov" oninput="preveriPogoje()" required>
-    
-    <span class="nacin-label">Izberi način vzpona:</span>
-    <div class="nacin-container">
-      <button type="button" class="nacin-btn" onclick="izberiNacin('Peš', this)">🚶 Peš</button>
-      <button type="button" class="nacin-btn" onclick="izberiNacin('Kolo', this)">🚴 Kolo</button>
-      <button type="button" class="nacin-btn" onclick="izberiNacin('eKolo', this)">⚡ eKolo</button>
+  <div class="container">
+    <div class="header">
+      <h1>Vpisna knjiga Pečke</h1>
+      <p>Prosimo, vnesite svoje podatke za vpis obiska.</p>
     </div>
 
-    <button id="vpisBtn" class="btn" disabled onclick="oddajVpis()">PREVERJANJE LOKACIJE...</button>
-    
-    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml?gid=1188154452&single=true" target="_blank" class="btn-secondary">LESTVICA</a>
+    <div id="status-box"></div>
 
-    <div id="status">Pridobivanje GPS lokacije...</div>
-    <span class="edit-link" id="resetBtn" style="display:none;" onclick="pobrisiPodatke()">Spremeni moje podatke</span>
-  </div>
+    <form id="vpis-form">
+      <div class="form-group">
+        <label for="ime">Ime</label>
+        <input type="text" id="ime" name="ime" required autocomplete="given-name">
+      </div>
 
-  <div class="footer-copyright">
-    &copy; Aleksander Brečko
+      <div class="form-group">
+        <label for="priimek">Priimek</label>
+        <input type="text" id="priimek" name="priimek" required autocomplete="family-name">
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-poštni naslov</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label>Način vzpona</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="pes" name="nacin" value="Peš" checked>
+            <label for="pes">Peš</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="kolo" name="nacin" value="Kolo">
+            <label for="kolo">Kolo</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="ekolo" name="nacin" value="eKolo">
+            <label for="ekolo">eKolo</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skrita polja za GPS koordinate -->
+      <input type="hidden" id="lat" name="lat">
+      <input type="hidden" id="lng" name="lng">
+
+      <button type="submit" id="submit-btn" disabled>Pridobivanje GPS lokacije...</button>
+    </form>
+
+    <div class="footer">
+      <p>Vpis je mogoč le v neposredni bližini Pečk (do 50 m).</p>
+    </div>
   </div>
 
   <script>
+    // Nastavitve
     const TARGET_LAT = 46.52271285660147;
     const TARGET_LNG = 15.54089586436217;
     const MAX_RADIUS_METERS = 50;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcCak3L6C3m_yO2-fT9p7j8fCgS2k49c1A3X1k7y2K5P0g9L3a1N0b/exec"; // Nadomestite z vašim spletnim URL-jem Apps Script-a
 
-    let userLat = null;
-    let userLng = null;
-    let isLocationValid = false;
-    let izbranNacin = "";
+    const form = document.getElementById('vpis-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusBox = document.getElementById('status-box');
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
 
-    function izberiNacin(nacin, btnElement) {
-      izbranNacin = nacin;
-      const gumbi = document.querySelectorAll('.nacin-btn');
-      gumbi.forEach(g => g.classList.remove('selected'));
-      btnElement.classList.add('selected');
-      preveriPogoje();
-    }
-
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function preveriPogoje() {
-      const btn = document.getElementById("vpisBtn");
-      const ime = document.getElementById("ime").value.trim();
-      const priimek = document.getElementById("priimek").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      const soPodatkiVeljavni = ime !== "" && priimek !== "" && validateEmail(email) && izbranNacin !== "";
-
-      if (isLocationValid && soPodatkiVeljavni) {
-        btn.disabled = false;
-        btn.classList.add("active");
-        btn.innerText = "POTRDI VPIS";
-      } else {
-        btn.disabled = true;
-        btn.classList.remove("active");
-        if (!isLocationValid) {
-          btn.innerText = "LOKACIJA NI USTREZNA";
-        } else {
-          btn.innerText = "IZPOLNITE VSA POLJA";
-        }
-      }
-    }
-
+    // Izračun razdalje med dvema točkama (Haversine formula)
     function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371000;
+      const R = 6371000; // Polmer Zemlje v metrih
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
     }
 
-    function ponastaviIzbiroNacina() {
-      izbranNacin = "";
-      document.querySelectorAll('.nacin-btn').forEach(g => g.classList.remove('selected'));
+    function showStatus(text, type) {
+      statusBox.textContent = text;
+      statusBox.className = '';
+      statusBox.classList.add('status-' + type);
+      statusBox.style.display = 'block';
     }
 
-    window.onload = function() {
-      const sIme = localStorage.getItem("vpis_ime");
-      const sPriimek = localStorage.getItem("vpis_priimek");
-      const sEmail = localStorage.getItem("vpis_email");
-
-      if (sIme && sPriimek && sEmail) {
-        document.getElementById("ime").value = sIme;
-        document.getElementById("priimek").value = sPriimek;
-        document.getElementById("email").value = sEmail;
-        document.getElementById("resetBtn").style.display = "inline-block";
+    // Pridobivanje GPS lokacije ob nalaganju
+    function checkLocation() {
+      if (!navigator.geolocation) {
+        showStatus("Vaš brskalnik ne podpira geolokacije.", "error");
+        submitBtn.textContent = "Geolokacija ni podprta";
+        return;
       }
 
-      ponastaviIzbiroNacina();
-      preveriGps();
-    };
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
 
-    // Ob povratku nazaj prek brskalniškega gumba "Back" (pageshow dogodek)
-    window.addEventListener('pageshow', function(event) {
-      ponastaviIzbiroNacina();
-      preveriPogoje();
+          latInput.value = userLat;
+          lngInput.value = userLng;
+
+          const distance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+
+          if (distance <= MAX_RADIUS_METERS) {
+            showStatus(`Nahajate se v območju vpisa (${distance} m od točke).`, "success");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Zabeleži vpis";
+          } else {
+            showStatus(`Premalo ste blizu! Nahajate se ${distance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
+          }
+        },
+        (error) => {
+          let errorMsg = "Napaka pri pridobivanju lokacije.";
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite lokacijo v brskalniku.";
+          }
+          showStatus(errorMsg, "error");
+          submitBtn.textContent = "Omogočite GPS lokacijo";
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    // Ob oddaji obrazca pošljemo podatke z fetch API in preprečimo ponovitev z osveževanjem
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Preverjanje lokacije in pošiljanje...";
+
+      // Ponovno preverimo lokacijo točno ob kliku
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const distance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+
+          if (distance > MAX_RADIUS_METERS) {
+            showStatus(`Vpis ni mogoč! Nahajate se ${distance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            submitBtn.textContent = "Vpis ni mogoč";
+            return;
+          }
+
+          latInput.value = userLat;
+          lngInput.value = userLng;
+
+          const formData = new FormData(form);
+
+          fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.text())
+          .then(html => {
+            document.open();
+            document.write(html);
+            document.close();
+          })
+          .catch(err => {
+            showStatus("Napaka pri povezavi s strežnikom. Poskusite znova.", "error");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Zabeleži vpis";
+          });
+        },
+        function(error) {
+          showStatus("Ni mogoče pridobiti trenutne lokacije za potrditev vpisa.", "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Zabeleži vpis";
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
     });
 
-    function preveriGps() {
-      const status = document.getElementById("status");
-
-      isLocationValid = false;
-      preveriPogoje();
-
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            userLat = pos.coords.latitude;
-            userLng = pos.coords.longitude;
-            const dist = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
-
-            if (dist <= MAX_RADIUS_METERS) {
-              status.style.color = "#28a745";
-              status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
-              isLocationValid = true;
-            } else {
-              status.style.color = "#dc3545";
-              status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
-              isLocationValid = false;
-            }
-            preveriPogoje();
-          },
-          (err) => {
-            userLat = null;
-            userLng = null;
-            isLocationValid = false;
-            status.style.color = "#dc3545";
-            status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
-            preveriPogoje();
-          },
-          { enableHighAccuracy: true, timeout: 12000, maximumAge: 3000 }
-        );
-      } else {
-        status.innerText = "Vaš brskalnik ne podpira geolokacije.";
-        isLocationValid = false;
-        preveriPogoje();
-      }
-    }
-
-    function oddajVpis() {
-      const ime = document.getElementById("ime").value.trim();
-      const priimek = document.getElementById("priimek").value.trim();
-      const email = document.getElementById("email").value.trim().toLowerCase();
-
-      if (!isLocationValid || userLat === null || userLng === null) {
-        alert("Vpis ni mogoč! Vaša lokacija ni ustrezna ali pa nimate vklopljenega GPS-a.");
-        return;
-      }
-
-      if (!ime || !priimek || !email) {
-        alert("Prosimo, izpolnite vsa vnosna polja!");
-        return;
-      }
-
-      if (!validateEmail(email)) {
-        alert("Prosimo, vnesite veljaven e-poštni naslov!");
-        return;
-      }
-
-      if (!izbranNacin) {
-        alert("Prosimo, izberite način vzpona (Peš, Kolo ali eKolo)!");
-        return;
-      }
-
-      const btn = document.getElementById("vpisBtn");
-      btn.disabled = true;
-      btn.innerText = "POŠILJANJE...";
-
-      localStorage.setItem("vpis_ime", ime);
-      localStorage.setItem("vpis_priimek", priimek);
-      localStorage.setItem("vpis_email", email);
-
-      const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
-
-      const latFormatted = Number(userLat).toFixed(4);
-      const lngFormatted = Number(userLng).toFixed(4);
-
-      const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&nacin=${encodeURIComponent(izbranNacin)}&lat=${encodeURIComponent(latFormatted)}&lng=${encodeURIComponent(lngFormatted)}&razdalja=${encodeURIComponent(razdalja)}`;
-
-      window.location.href = fullUrl;
-    }
-
-    function pobrisiPodatke() {
-      if (confirm("Želite izbrisati shranjene podatke s tega telefona?")) {
-        localStorage.removeItem("vpis_ime");
-        localStorage.removeItem("vpis_priimek");
-        localStorage.removeItem("vpis_email");
-        document.getElementById("ime").value = "";
-        document.getElementById("priimek").value = "";
-        document.getElementById("email").value = "";
-        
-        ponastaviIzbiroNacina();
-        
-        document.getElementById("resetBtn").style.display = "none";
-        preveriPogoje();
-      }
-    }
+    // Zagon ob nalaganju strani
+    window.onload = checkLocation;
   </script>
 </body>
 </html>
