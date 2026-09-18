@@ -8,113 +8,144 @@
   <meta http-equiv="Expires" content="0">
   <title>Vpis obiska - Pečke</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body { 
-      font-family: system-ui, -apple-system, sans-serif; 
-      max-width: 400px; 
-      margin: 20px auto; 
-      padding: 15px; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      max-width: 420px; 
+      margin: 0 auto; 
+      padding: 20px 15px; 
       text-align: center; 
-      color: #333; 
+      color: #2c3e50; 
+      background-color: #f0f4f8;
     }
     .card { 
-      background: #f9f9f9; 
-      padding: 20px; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+      background: #ffffff; 
+      padding: 24px 20px; 
+      border-radius: 16px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #1a252f;
+      font-size: 22px;
     }
     input { 
-      width: 90%; 
-      padding: 12px; 
+      width: 100%; 
+      padding: 13px 15px; 
       margin: 6px 0; 
       font-size: 15px; 
-      border: 1px solid #ccc; 
-      border-radius: 6px; 
-      box-sizing: border-box; 
+      border: 1.5px solid #dcdfe6; 
+      border-radius: 10px; 
+      background-color: #fcfcfc;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #0056b3;
+      background-color: #ffffff;
     }
     
-    /* Način vzpona - Gumbi */
+    /* Način vzpona - Izbirni Gumbi */
     .nacin-label {
       display: block;
-      margin-top: 15px;
-      margin-bottom: 8px;
+      margin-top: 18px;
+      margin-bottom: 10px;
       font-size: 14px;
-      font-weight: bold;
-      color: #555;
+      font-weight: 600;
+      color: #4a5568;
       text-align: left;
-      padding-left: 5%;
     }
     .nacin-container {
       display: flex;
       justify-content: space-between;
-      width: 90%;
-      margin: 0 auto 10px auto;
+      width: 100%;
+      margin-bottom: 15px;
       gap: 8px;
     }
     .nacin-btn {
       flex: 1;
-      padding: 10px 5px;
+      padding: 12px 6px;
       font-size: 14px;
-      font-weight: bold;
-      color: #0066cc;
-      background-color: #ffffff;
-      border: 2px solid #0066cc;
-      border-radius: 6px;
+      font-weight: 600;
+      color: #0056b3;
+      background-color: #f0f7ff;
+      border: 1.5px solid #b8d9ff;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .nacin-btn:active {
+      transform: scale(0.98);
     }
     .nacin-btn.selected {
-      background-color: #0066cc;
+      background-color: #0056b3;
       color: #ffffff;
+      border-color: #0056b3;
+      box-shadow: 0 3px 8px rgba(0, 86, 179, 0.25);
     }
 
+    /* Glavni Gumbi */
     .btn { 
-      width: 90%; 
-      padding: 14px; 
+      width: 100%; 
+      padding: 15px; 
       margin-top: 10px; 
       font-size: 16px; 
-      font-weight: bold; 
-      color: white; 
-      background-color: #cccccc; 
+      font-weight: 700; 
+      color: #888888; 
+      background-color: #e2e8f0; 
       border: none; 
-      border-radius: 6px; 
+      border-radius: 10px; 
       cursor: not-allowed; 
-      transition: 0.2s; 
+      transition: all 0.2s ease; 
     }
     .btn.active { 
       background-color: #28a745; 
+      color: #ffffff;
       cursor: pointer; 
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    .btn.active:active {
+      transform: scale(0.99);
     }
     
     .btn-secondary { 
       display: block; 
-      width: 90%; 
-      margin: 15px auto 0 auto; 
-      padding: 12px; 
+      width: 100%; 
+      margin: 12px auto 0 auto; 
+      padding: 13px; 
       font-size: 15px; 
-      font-weight: bold; 
-      color: #0066cc; 
+      font-weight: 700; 
+      color: #0056b3; 
       background-color: #ffffff; 
-      border: 2px solid #0066cc; 
-      border-radius: 6px; 
+      border: 1.5px solid #0056b3; 
+      border-radius: 10px; 
       text-decoration: none; 
-      box-sizing: border-box; 
-      transition: 0.2s; 
+      transition: all 0.2s ease; 
     }
-    .btn-secondary:hover { 
-      background-color: #e6f0fa; 
+    .btn-secondary:active { 
+      background-color: #f0f7ff; 
+      transform: scale(0.99);
     }
 
     #status { 
-      margin-top: 15px; 
+      margin-top: 18px; 
       font-size: 14px; 
       font-weight: 600; 
       min-height: 20px; 
+      line-height: 1.4;
     }
     .edit-link { 
       display: inline-block; 
-      margin-top: 12px; 
-      font-size: 12px; 
-      color: #0066cc; 
+      margin-top: 14px; 
+      font-size: 13px; 
+      color: #0056b3; 
       text-decoration: underline; 
       cursor: pointer; 
     }
@@ -122,7 +153,8 @@
     .footer-copyright {
       margin-top: 25px;
       font-size: 12px;
-      color: #777777;
+      color: #8898aa;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -220,14 +252,14 @@
               btn.disabled = false;
               btn.classList.add("active");
               btn.innerText = "POTRDI VPIS";
-              status.style.color = "green";
+              status.style.color = "#28a745";
               status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
               isLocationValid = true;
             } else {
               btn.disabled = true;
               btn.classList.remove("active");
               btn.innerText = "VPIS NI OMOGOČEN";
-              status.style.color = "red";
+              status.style.color = "#dc3545";
               status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
               isLocationValid = false;
             }
@@ -239,7 +271,7 @@
             btn.disabled = true;
             btn.classList.remove("active");
             btn.innerText = "VPIS NI OMOGOČEN";
-            status.style.color = "red";
+            status.style.color = "#dc3545";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 3000 }
