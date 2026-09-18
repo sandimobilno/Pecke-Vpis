@@ -13,7 +13,7 @@
       --text-color: #333333;
       --border-color: #dddddd;
       --error-color: #d9534f;
-      --success-color: #5cb85c;
+      --success-color: #28a745;
     }
 
     * {
@@ -133,18 +133,19 @@
     }
 
     .status-error {
-      background-color: #f2dede;
-      color: var(--error-color);
-      border: 1px solid #ebccd1;
+      background-color: #fff3f3;
+      color: #dc3545;
+      border: 1px solid #ffcdd2;
     }
 
     .status-success {
       background-color: #dff0d8;
-      color: var(--success-color);
+      color: #28a745;
       border: 1px solid #d6e9c6;
     }
 
-    button {
+    button, .btn {
+      display: inline-block;
       width: 100%;
       padding: 14px;
       background-color: var(--primary-color);
@@ -154,10 +155,12 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
+      text-align: center;
+      text-decoration: none;
       transition: background-color 0.2s;
     }
 
-    button:hover {
+    button:hover, .btn:hover {
       background-color: var(--primary-hover);
     }
 
@@ -172,11 +175,31 @@
       font-size: 12px;
       color: #888;
     }
+
+    /* Uspešen vpis kartica */
+    .success-card {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .success-card .icon {
+      font-size: 50px;
+      color: var(--success-color);
+      margin-bottom: 10px;
+    }
+    .success-card h2 {
+      color: var(--success-color);
+      margin-bottom: 15px;
+    }
+    .success-card p {
+      font-size: 16px;
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="main-container">
     <div class="header">
       <h1>Vpisna knjiga Pečke</h1>
       <p>Prosimo, vnesite svoje podatke za vpis obiska.</p>
@@ -231,21 +254,20 @@
   </div>
 
   <script>
-    // Nastavitve
     const TARGET_LAT = 46.52271285660147;
     const TARGET_LNG = 15.54089586436217;
     const MAX_RADIUS_METERS = 50;
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcCak3L6C3m_yO2-fT9p7j8fCgS2k49c1A3X1k7y2K5P0g9L3a1N0b/exec"; // Nadomestite z vašim spletnim URL-jem Apps Script-a
 
+    const container = document.getElementById('main-container');
     const form = document.getElementById('vpis-form');
     const submitBtn = document.getElementById('submit-btn');
     const statusBox = document.getElementById('status-box');
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');
 
-    // Izračun razdalje med dvema točkama (Haversine formula)
     function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371000; // Polmer Zemlje v metrih
+      const R = 6371000;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
       const a = 
@@ -263,7 +285,6 @@
       statusBox.style.display = 'block';
     }
 
-    // Pridobivanje GPS lokacije ob nalaganju
     function checkLocation() {
       if (!navigator.geolocation) {
         showStatus("Vaš brskalnik ne podpira geolokacije.", "error");
@@ -292,7 +313,7 @@
           }
         },
         (error) => {
-          let errorMsg = "Napaka pri pridobivanju lokacije.";
+          let errorMsg = "Napaka pri pridobivanjem lokacije.";
           if (error.code === error.PERMISSION_DENIED) {
             errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite lokacijo v brskalniku.";
           }
@@ -303,14 +324,12 @@
       );
     }
 
-    // Ob oddaji obrazca pošljemo podatke z fetch API in preprečimo ponovitev z osveževanjem
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Preverjanje lokacije in pošiljanje...";
 
-      // Ponovno preverimo lokacijo točno ob kliku
       navigator.geolocation.getCurrentPosition(
         function(position) {
           const userLat = position.coords.latitude;
@@ -332,11 +351,22 @@
             method: 'POST',
             body: formData
           })
-          .then(response => response.text())
-          .then(html => {
-            document.open();
-            document.write(html);
-            document.close();
+          .then(response => response.json())
+          .then(res => {
+            if (res.status === "success") {
+              container.innerHTML = `
+                <div class="success-card">
+                  <div class="icon">✓</div>
+                  <h2>Vpis uspešen!</h2>
+                  <p>Hvala, <strong>${res.ime} ${res.priimek}</strong>.<br>Vaš obisk je bil uspešno zabeležen (način: ${res.nacin}, oddaljenost: ${res.razdalja} m).</p>
+                  <a href="https://sandimobilno.github.io/Pecke-Vpis/" class="btn">Nazaj na vpis</a>
+                </div>
+              `;
+            } else {
+              showStatus(res.message || "Napaka pri vnosu.", "error");
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Zabeleži vpis";
+            }
           })
           .catch(err => {
             showStatus("Napaka pri povezavi s strežnikom. Poskusite znova.", "error");
@@ -353,7 +383,6 @@
       );
     });
 
-    // Zagon ob nalaganju strani
     window.onload = checkLocation;
   </script>
 </body>
