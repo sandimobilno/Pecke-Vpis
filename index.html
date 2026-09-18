@@ -176,7 +176,6 @@
       color: #888;
     }
 
-    /* Uspešen vpis kartica */
     .success-card {
       text-align: center;
       padding: 10px 0;
@@ -195,9 +194,16 @@
       margin-bottom: 25px;
       line-height: 1.4;
     }
+
+    iframe#hidden_iframe {
+      display: none;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Skrito iframe okno, ki preprečuje preusmeritev spletne strani -->
+  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 
   <div class="container" id="main-container">
     <div class="header">
@@ -207,7 +213,7 @@
 
     <div id="status-box"></div>
 
-    <form id="vpis-form">
+    <form id="vpis-form" action="https://script.google.com/macros/s/AKfycbwcCak3L6C3m_yO2-fT9p7j8fCgS2k49c1A3X1k7y2K5P0g9L3a1N0b/exec" method="POST" target="hidden_iframe">
       <div class="form-group">
         <label for="ime">Ime</label>
         <input type="text" id="ime" name="ime" required autocomplete="given-name">
@@ -257,7 +263,6 @@
     const TARGET_LAT = 46.52271285660147;
     const TARGET_LNG = 15.54089586436217;
     const MAX_RADIUS_METERS = 50;
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcCak3L6C3m_yO2-fT9p7j8fCgS2k49c1A3X1k7y2K5P0g9L3a1N0b/exec"; // Nadomestite z vašim spletnim URL-jem Apps Script-a
 
     const container = document.getElementById('main-container');
     const form = document.getElementById('vpis-form');
@@ -265,6 +270,10 @@
     const statusBox = document.getElementById('status-box');
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');
+    const iframe = document.getElementById('hidden_iframe');
+
+    let isSubmitting = false;
+    let currentDistance = null;
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -300,14 +309,14 @@
           latInput.value = userLat;
           lngInput.value = userLng;
 
-          const distance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+          currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
-          if (distance <= MAX_RADIUS_METERS) {
-            showStatus(`Nahajate se v območju vpisa (${distance} m od točke).`, "success");
+          if (currentDistance <= MAX_RADIUS_METERS) {
+            showStatus(`Nahajate se v območju vpisa (${currentDistance} m od točke).`, "success");
             submitBtn.disabled = false;
             submitBtn.textContent = "Zabeleži vpis";
           } else {
-            showStatus(`Premalo ste blizu! Nahajate se ${distance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Premalo ste blizu! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
           }
@@ -325,62 +334,28 @@
     }
 
     form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
       submitBtn.disabled = true;
-      submitBtn.textContent = "Preverjanje lokacije in pošiljanje...";
+      submitBtn.textContent = "Pošiljanje...";
+      isSubmitting = true;
+    });
 
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-          const distance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+    // Ko skriti iframe konča z nalaganjem odgovora iz Google skripte
+    iframe.addEventListener('load', function() {
+      if (isSubmitting) {
+        const imeVal = document.getElementById('ime').value;
+        const priimekVal = document.getElementById('priimek').value;
+        const nacinVal = document.querySelector('input[name="nacin"]:checked').value;
 
-          if (distance > MAX_RADIUS_METERS) {
-            showStatus(`Vpis ni mogoč! Nahajate se ${distance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
-            submitBtn.textContent = "Vpis ni mogoč";
-            return;
-          }
-
-          latInput.value = userLat;
-          lngInput.value = userLng;
-
-          const formData = new FormData(form);
-
-          fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(res => {
-            if (res.status === "success") {
-              container.innerHTML = `
-                <div class="success-card">
-                  <div class="icon">✓</div>
-                  <h2>Vpis uspešen!</h2>
-                  <p>Hvala, <strong>${res.ime} ${res.priimek}</strong>.<br>Vaš obisk je bil uspešno zabeležen (način: ${res.nacin}, oddaljenost: ${res.razdalja} m).</p>
-                  <a href="https://sandimobilno.github.io/Pecke-Vpis/" class="btn">Nazaj na vpis</a>
-                </div>
-              `;
-            } else {
-              showStatus(res.message || "Napaka pri vnosu.", "error");
-              submitBtn.disabled = false;
-              submitBtn.textContent = "Zabeleži vpis";
-            }
-          })
-          .catch(err => {
-            showStatus("Napaka pri povezavi s strežnikom. Poskusite znova.", "error");
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Zabeleži vpis";
-          });
-        },
-        function(error) {
-          showStatus("Ni mogoče pridobiti trenutne lokacije za potrditev vpisa.", "error");
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Zabeleži vpis";
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
+        container.innerHTML = `
+          <div class="success-card">
+            <div class="icon">✓</div>
+            <h2>Vpis uspešen!</h2>
+            <p>Hvala, <strong>${imeVal} ${priimekVal}</strong>.<br>Vaš obisk je bil uspešno zabeležen (način: ${nacinVal}, oddaljenost: ${currentDistance} m).</p>
+            <a href="https://sandimobilno.github.io/Pecke-Vpis/" class="btn">Nazaj na vpis</a>
+          </div>
+        `;
+        isSubmitting = false;
+      }
     });
 
     window.onload = checkLocation;
