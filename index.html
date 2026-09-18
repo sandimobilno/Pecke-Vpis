@@ -8,19 +8,122 @@
   <meta http-equiv="Expires" content="0">
   <title>Vpis obiska - Pečke</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 400px; margin: 20px auto; padding: 15px; text-align: center; color: #333; }
-    .card { background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    input { width: 90%; padding: 12px; margin: 6px 0; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      max-width: 400px; 
+      margin: 20px auto; 
+      padding: 15px; 
+      text-align: center; 
+      color: #333; 
+    }
+    .card { 
+      background: #f9f9f9; 
+      padding: 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    }
+    input { 
+      width: 90%; 
+      padding: 12px; 
+      margin: 6px 0; 
+      font-size: 15px; 
+      border: 1px solid #ccc; 
+      border-radius: 6px; 
+      box-sizing: border-box; 
+    }
     
-    .btn { width: 90%; padding: 14px; margin-top: 10px; font-size: 16px; font-weight: bold; color: white; background-color: #cccccc; border: none; border-radius: 6px; cursor: not-allowed; transition: 0.2s; }
-    .btn.active { background-color: #28a745; cursor: pointer; }
-    
-    /* Slog za gumb Lestvica */
-    .btn-secondary { display: block; width: 90%; margin: 15px auto 0 auto; padding: 12px; font-size: 15px; font-weight: bold; color: #0066cc; background-color: #ffffff; border: 2px solid #0066cc; border-radius: 6px; text-decoration: none; box-sizing: border-box; transition: 0.2s; }
-    .btn-secondary:hover { background-color: #e6f0fa; }
+    /* Način vzpona - Gumbi */
+    .nacin-label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #555;
+      text-align: left;
+      padding-left: 5%;
+    }
+    .nacin-container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      margin: 0 auto 10px auto;
+      gap: 8px;
+    }
+    .nacin-btn {
+      flex: 1;
+      padding: 10px 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #0066cc;
+      background-color: #ffffff;
+      border: 2px solid #0066cc;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nacin-btn.selected {
+      background-color: #0066cc;
+      color: #ffffff;
+    }
 
-    #status { margin-top: 15px; font-size: 14px; font-weight: 600; min-height: 20px; }
-    .edit-link { display: inline-block; margin-top: 12px; font-size: 12px; color: #0066cc; text-decoration: underline; cursor: pointer; }
+    .btn { 
+      width: 90%; 
+      padding: 14px; 
+      margin-top: 10px; 
+      font-size: 16px; 
+      font-weight: bold; 
+      color: white; 
+      background-color: #cccccc; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: not-allowed; 
+      transition: 0.2s; 
+    }
+    .btn.active { 
+      background-color: #28a745; 
+      cursor: pointer; 
+    }
+    
+    .btn-secondary { 
+      display: block; 
+      width: 90%; 
+      margin: 15px auto 0 auto; 
+      padding: 12px; 
+      font-size: 15px; 
+      font-weight: bold; 
+      color: #0066cc; 
+      background-color: #ffffff; 
+      border: 2px solid #0066cc; 
+      border-radius: 6px; 
+      text-decoration: none; 
+      box-sizing: border-box; 
+      transition: 0.2s; 
+    }
+    .btn-secondary:hover { 
+      background-color: #e6f0fa; 
+    }
+
+    #status { 
+      margin-top: 15px; 
+      font-size: 14px; 
+      font-weight: 600; 
+      min-height: 20px; 
+    }
+    .edit-link { 
+      display: inline-block; 
+      margin-top: 12px; 
+      font-size: 12px; 
+      color: #0066cc; 
+      text-decoration: underline; 
+      cursor: pointer; 
+    }
+
+    .footer-copyright {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #777777;
+    }
   </style>
 </head>
 <body>
@@ -32,24 +135,41 @@
     <input type="text" id="priimek" placeholder="Priimek" required>
     <input type="email" id="email" placeholder="E-poštni naslov" required>
     
+    <span class="nacin-label">Izberi način vzpona:</span>
+    <div class="nacin-container">
+      <button type="button" class="nacin-btn" onclick="izberiNacin('Peš', this)">🚶 Peš</button>
+      <button type="button" class="nacin-btn" onclick="izberiNacin('Kolo', this)">🚴 Kolo</button>
+      <button type="button" class="nacin-btn" onclick="izberiNacin('eKolo', this)">⚡ eKolo</button>
+    </div>
+
     <button id="vpisBtn" class="btn" disabled onclick="oddajVpis()">PREVERJANJE LOKACIJE...</button>
     
-    <!-- Gumb za ogled lestvice -->
     <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml?gid=1188154452&single=true" target="_blank" class="btn-secondary">LESTVICA</a>
 
     <div id="status">Pridobivanje GPS lokacije...</div>
     <span class="edit-link" id="resetBtn" style="display:none;" onclick="pobrisiPodatke()">Spremeni moje podatke</span>
   </div>
 
+  <div class="footer-copyright">
+    &copy; Aleksander Brečko
+  </div>
+
   <script>
-    // --- ENOTNE TOČNE KOORDINATE IN RADIJ ---
     const TARGET_LAT = 46.52271285660147;
     const TARGET_LNG = 15.54089586436217;
     const MAX_RADIUS_METERS = 50;
 
     let userLat = null;
     let userLng = null;
-    let isLocationValid = false; // Zastavica, ki potrjuje veljavnost lokacije
+    let isLocationValid = false;
+    let izbranNacin = "";
+
+    function izberiNacin(nacin, btnElement) {
+      izbranNacin = nacin;
+      const gumbi = document.querySelectorAll('.nacin-btn');
+      gumbi.forEach(g => g.classList.remove('selected'));
+      btnElement.classList.add('selected');
+    }
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -133,7 +253,6 @@
     }
 
     function oddajVpis() {
-      // Preverimo, ali je bila lokacija uspešno potrjena ob nalaganju
       if (!isLocationValid || userLat === null || userLng === null) {
         alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
         return;
@@ -153,6 +272,11 @@
         return;
       }
 
+      if (!izbranNacin) {
+        alert("Prosimo, izberite način vzpona (Peš, Kolo ali eKolo)!");
+        return;
+      }
+
       const btn = document.getElementById("vpisBtn");
       btn.disabled = true;
       btn.innerText = "POŠILJANJE...";
@@ -163,12 +287,11 @@
 
       const razdalja = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
-      // Zaokrožitev koordinat na 4 decimalna mesta
       const latFormatted = Number(userLat).toFixed(4);
       const lngFormatted = Number(userLng).toFixed(4);
 
       const baseUrl = "https://script.google.com/macros/s/AKfycbxsWJWNSL_119EsMiIOmPV5Fsl1nDgxiyBve9wi6qaMspEPWCelUJS4ZG7acvagHKLK4A/exec";
-      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&lat=${encodeURIComponent(latFormatted)}&lng=${encodeURIComponent(lngFormatted)}&razdalja=${encodeURIComponent(razdalja)}`;
+      const fullUrl = `${baseUrl}?ime=${encodeURIComponent(ime)}&priimek=${encodeURIComponent(priimek)}&email=${encodeURIComponent(email)}&nacin=${encodeURIComponent(izbranNacin)}&lat=${encodeURIComponent(latFormatted)}&lng=${encodeURIComponent(lngFormatted)}&razdalja=${encodeURIComponent(razdalja)}`;
 
       window.location.href = fullUrl;
     }
@@ -181,6 +304,10 @@
         document.getElementById("ime").value = "";
         document.getElementById("priimek").value = "";
         document.getElementById("email").value = "";
+        
+        izbranNacin = "";
+        document.querySelectorAll('.nacin-btn').forEach(g => g.classList.remove('selected'));
+        
         document.getElementById("resetBtn").style.display = "none";
       }
     }
