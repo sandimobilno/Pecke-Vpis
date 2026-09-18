@@ -34,7 +34,7 @@
       color: var(--text-main);
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       padding: 10px 20px 20px 20px;
     }
@@ -43,9 +43,10 @@
       background-color: var(--card-bg);
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      padding: 20px 28px 32px 28px;
+      padding: 20px 28px 24px 28px;
       width: 100%;
       max-width: 440px;
+      margin-top: 10px;
     }
 
     .header {
@@ -186,6 +187,13 @@
       color: var(--text-muted);
     }
 
+    .copyright {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
     .success-card {
       text-align: center;
       padding: 10px 0;
@@ -265,6 +273,7 @@
 
     <div class="footer">
       <p>Vpis je mogoč le v neposredni bližini Pečk (do 50 m).</p>
+      <p class="copyright">&copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -325,7 +334,7 @@
             submitBtn.disabled = false;
             submitBtn.textContent = "Zabeleži vpis";
           } else {
-            showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke vpisa (dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
           }
