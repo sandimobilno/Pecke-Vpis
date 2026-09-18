@@ -202,7 +202,7 @@
 </head>
 <body>
 
-  <!-- Skrito iframe okno, ki preprečuje preusmeritev spletne strani -->
+  <!-- Skrito okno za pošiljanje podatkov brez preusmeritve -->
   <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 
   <div class="container" id="main-container">
@@ -339,7 +339,6 @@
       isSubmitting = true;
     });
 
-    // Ko skriti iframe konča z nalaganjem odgovora iz Google skripte
     iframe.addEventListener('load', function() {
       if (isSubmitting) {
         const imeVal = document.getElementById('ime').value;
