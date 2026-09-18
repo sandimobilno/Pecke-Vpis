@@ -331,6 +331,11 @@
       statusBox.style.display = 'block';
     }
 
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
     function validateForm() {
       if (!isLocationValid) return;
 
@@ -339,7 +344,8 @@
       const email = emailInput.value.trim();
       const nacinElem = document.querySelector('input[name="nacin"]:checked');
 
-      const isFormFilled = ime !== '' && priimek !== '' && email !== '' && nacinElem !== null;
+      const isEmailValid = isValidEmail(email);
+      const isFormFilled = ime !== '' && priimek !== '' && isEmailValid && nacinElem !== null;
 
       if (isFormFilled) {
         submitBtn.disabled = false;
