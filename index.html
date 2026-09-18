@@ -48,7 +48,6 @@
       background-color: #ffffff;
     }
     
-    /* Način vzpona - Izbirni Gumbi */
     .nacin-label {
       display: block;
       margin-top: 18px;
@@ -91,7 +90,6 @@
       box-shadow: 0 3px 8px rgba(0, 86, 179, 0.25);
     }
 
-    /* Glavni Gumbi */
     .btn { 
       width: 100%; 
       padding: 15px; 
@@ -105,6 +103,7 @@
       cursor: not-allowed; 
       transition: all 0.2s ease; 
     }
+    /* Aktiven zelen gumb - vidljiv samo ob vseh izpolnjenih pogojih */
     .btn.active { 
       background-color: #28a745; 
       color: #ffffff;
@@ -163,9 +162,9 @@
   <div class="card">
     <h2>Vpis obiska</h2>
     
-    <input type="text" id="ime" placeholder="Ime" required>
-    <input type="text" id="priimek" placeholder="Priimek" required>
-    <input type="email" id="email" placeholder="E-poštni naslov" required>
+    <input type="text" id="ime" placeholder="Ime" oninput="preveriPogoje()" required>
+    <input type="text" id="priimek" placeholder="Priimek" oninput="preveriPogoje()" required>
+    <input type="email" id="email" placeholder="E-poštni naslov" oninput="preveriPogoje()" required>
     
     <span class="nacin-label">Izberi način vzpona:</span>
     <div class="nacin-container">
@@ -201,6 +200,34 @@
       const gumbi = document.querySelectorAll('.nacin-btn');
       gumbi.forEach(g => g.classList.remove('selected'));
       btnElement.classList.add('selected');
+      preveriPogoje();
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function preveriPogoje() {
+      const btn = document.getElementById("vpisBtn");
+      const ime = document.getElementById("ime").value.trim();
+      const priimek = document.getElementById("priimek").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      const soPodatkiVeljavni = ime !== "" && priimek !== "" && validateEmail(email) && izbranNacin !== "";
+
+      if (isLocationValid && soPodatkiVeljavni) {
+        btn.disabled = false;
+        btn.classList.add("active");
+        btn.innerText = "POTRDI VPIS";
+      } else {
+        btn.disabled = true;
+        btn.classList.remove("active");
+        if (!isLocationValid) {
+          btn.innerText = "LOKACIJA NI USTREZNA";
+        } else {
+          btn.innerText = "IZPOLNITE VSA POLJA";
+        }
+      }
     }
 
     function getDistance(lat1, lon1, lat2, lon2) {
@@ -211,10 +238,6 @@
                 Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                 Math.sin(dLon/2) * Math.sin(dLon/2);
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
     window.onload = function() {
@@ -233,13 +256,10 @@
     };
 
     function preveriGps() {
-      const btn = document.getElementById("vpisBtn");
       const status = document.getElementById("status");
 
-      btn.disabled = true;
-      btn.classList.remove("active");
-      btn.innerText = "PREVERJANJE LOKACIJE...";
       isLocationValid = false;
+      preveriPogoje();
 
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -249,53 +269,45 @@
             const dist = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
             if (dist <= MAX_RADIUS_METERS) {
-              btn.disabled = false;
-              btn.classList.add("active");
-              btn.innerText = "POTRDI VPIS";
               status.style.color = "#28a745";
               status.innerText = `Ste na lokaciji (oddaljenost: ${dist} m).`;
               isLocationValid = true;
             } else {
-              btn.disabled = true;
-              btn.classList.remove("active");
-              btn.innerText = "VPIS NI OMOGOČEN";
               status.style.color = "#dc3545";
               status.innerText = `Ste zunaj območja (${dist} m od točke, max ${MAX_RADIUS_METERS} m).`;
               isLocationValid = false;
             }
+            preveriPogoje();
           },
           (err) => {
             userLat = null;
             userLng = null;
             isLocationValid = false;
-            btn.disabled = true;
-            btn.classList.remove("active");
-            btn.innerText = "VPIS NI OMOGOČEN";
             status.style.color = "#dc3545";
             status.innerText = "Za vpis morate vklopiti GPS in dovoliti dostop do lokacije.";
+            preveriPogoje();
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 3000 }
         );
       } else {
-        btn.disabled = true;
-        btn.classList.remove("active");
         status.innerText = "Vaš brskalnik ne podpira geolokacije.";
         isLocationValid = false;
+        preveriPogoje();
       }
     }
 
     function oddajVpis() {
-      if (!isLocationValid || userLat === null || userLng === null) {
-        alert("Vpis ni mogoč! Vaša lokacija se ne ujema z nastavljenimi koordinatami ali pa ste zunaj dovoljenega območja.");
-        return;
-      }
-
       const ime = document.getElementById("ime").value.trim();
       const priimek = document.getElementById("priimek").value.trim();
       const email = document.getElementById("email").value.trim().toLowerCase();
 
+      if (!isLocationValid || userLat === null || userLng === null) {
+        alert("Vpis ni mogoč! Vaša lokacija ni ustrezna ali pa nimate vklopljenega GPS-a.");
+        return;
+      }
+
       if (!ime || !priimek || !email) {
-        alert("Prosimo, izpolnite vsa polja!");
+        alert("Prosimo, izpolnite vsa vnosna polja!");
         return;
       }
 
@@ -341,6 +353,7 @@
         document.querySelectorAll('.nacin-btn').forEach(g => g.classList.remove('selected'));
         
         document.getElementById("resetBtn").style.display = "none";
+        preveriPogoje();
       }
     }
   </script>
