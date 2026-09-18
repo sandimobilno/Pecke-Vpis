@@ -240,6 +240,11 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    function ponastaviIzbiroNacina() {
+      izbranNacin = "";
+      document.querySelectorAll('.nacin-btn').forEach(g => g.classList.remove('selected'));
+    }
+
     window.onload = function() {
       const sIme = localStorage.getItem("vpis_ime");
       const sPriimek = localStorage.getItem("vpis_priimek");
@@ -252,8 +257,15 @@
         document.getElementById("resetBtn").style.display = "inline-block";
       }
 
+      ponastaviIzbiroNacina();
       preveriGps();
     };
+
+    // Ob povratku nazaj prek brskalniškega gumba "Back" (pageshow dogodek)
+    window.addEventListener('pageshow', function(event) {
+      ponastaviIzbiroNacina();
+      preveriPogoje();
+    });
 
     function preveriGps() {
       const status = document.getElementById("status");
@@ -349,8 +361,7 @@
         document.getElementById("priimek").value = "";
         document.getElementById("email").value = "";
         
-        izbranNacin = "";
-        document.querySelectorAll('.nacin-btn').forEach(g => g.classList.remove('selected'));
+        ponastaviIzbiroNacina();
         
         document.getElementById("resetBtn").style.display = "none";
         preveriPogoje();
