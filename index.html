@@ -304,8 +304,13 @@
     const lngInput = document.getElementById('lng');
     const iframe = document.getElementById('hidden_iframe');
 
+    const imeInput = document.getElementById('ime');
+    const priimekInput = document.getElementById('priimek');
+    const emailInput = document.getElementById('email');
+
     let isSubmitting = false;
     let currentDistance = null;
+    let isLocationValid = false;
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -324,6 +329,25 @@
       statusBox.className = '';
       statusBox.classList.add('status-' + type);
       statusBox.style.display = 'block';
+    }
+
+    function validateForm() {
+      if (!isLocationValid) return;
+
+      const ime = imeInput.value.trim();
+      const priimek = priimekInput.value.trim();
+      const email = emailInput.value.trim();
+      const nacinElem = document.querySelector('input[name="nacin"]:checked');
+
+      const isFormFilled = ime !== '' && priimek !== '' && email !== '' && nacinElem !== null;
+
+      if (isFormFilled) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Zabeleži vzpon";
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Zabeleži vzpon";
+      }
     }
 
     function checkLocation() {
@@ -345,10 +369,11 @@
 
           if (currentDistance <= MAX_RADIUS_METERS) {
             showStatus(`Nahajate se v območju vpisa (${currentDistance} m od točke).`, "success");
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Zabeleži vzpon";
+            isLocationValid = true;
+            validateForm();
           } else {
             showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke vpisa (dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
+            isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
           }
@@ -359,11 +384,20 @@
             errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite lokacijo v brskalniku.";
           }
           showStatus(errorMsg, "error");
+          isLocationValid = false;
+          submitBtn.disabled = true;
           submitBtn.textContent = "Omogočite GPS lokacijo";
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
+
+    imeInput.addEventListener('input', validateForm);
+    priimekInput.addEventListener('input', validateForm);
+    emailInput.addEventListener('input', validateForm);
+    document.querySelectorAll('input[name="nacin"]').forEach(radio => {
+      radio.addEventListener('change', validateForm);
+    });
 
     form.addEventListener('submit', function(e) {
       submitBtn.disabled = true;
@@ -373,8 +407,8 @@
 
     iframe.addEventListener('load', function() {
       if (isSubmitting) {
-        const imeVal = document.getElementById('ime').value;
-        const priimekVal = document.getElementById('priimek').value;
+        const imeVal = imeInput.value;
+        const priimekVal = priimekInput.value;
         const nacinElem = document.querySelector('input[name="nacin"]:checked');
         const nacinVal = nacinElem ? nacinElem.value : '';
 
