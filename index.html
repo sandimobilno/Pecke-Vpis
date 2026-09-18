@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vpisna knjiga - Pečke</title>
+  <title>Izziv Pečke - Vpis vzpona</title>
   <style>
     :root {
       --primary-color: #2e7d32;
@@ -70,7 +70,7 @@
       margin-bottom: 18px;
     }
 
-    label {
+    label.section-label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
@@ -226,7 +226,7 @@
 
   <div class="container" id="main-container">
     <div class="header">
-      <h1>Vpisna knjiga Pečke</h1>
+      <h1>Izziv Pečke - Vpis vzpona</h1>
       <p>Prosimo, vnesite svoje podatke za vpis obiska.</p>
     </div>
 
@@ -234,25 +234,22 @@
 
     <form id="vpis-form" action="https://script.google.com/macros/s/AKfycbwcCak3L6C3m_yO2-fT9p7j8fCgS2k49c1A3X1k7y2K5P0g9L3a1N0b/exec" method="POST" target="hidden_iframe">
       <div class="form-group">
-        <label for="ime">Ime</label>
-        <input type="text" id="ime" name="ime" required autocomplete="given-name">
+        <input type="text" id="ime" name="ime" placeholder="Ime" required autocomplete="given-name">
       </div>
 
       <div class="form-group">
-        <label for="priimek">Priimek</label>
-        <input type="text" id="priimek" name="priimek" required autocomplete="family-name">
+        <input type="text" id="priimek" name="priimek" placeholder="Priimek" required autocomplete="family-name">
       </div>
 
       <div class="form-group">
-        <label for="email">E-poštni naslov</label>
-        <input type="email" id="email" name="email" required autocomplete="email">
+        <input type="email" id="email" name="email" placeholder="E-poštni naslov" required autocomplete="email">
       </div>
 
       <div class="form-group">
-        <label>Način vzpona</label>
+        <label class="section-label">Način vzpona</label>
         <div class="radio-group">
           <div class="radio-option">
-            <input type="radio" id="pes" name="nacin" value="Peš" checked>
+            <input type="radio" id="pes" name="nacin" value="Peš" required>
             <label for="pes">Peš</label>
           </div>
           <div class="radio-option">
@@ -334,7 +331,7 @@
             submitBtn.disabled = false;
             submitBtn.textContent = "Zabeleži vpis";
           } else {
-            showStatus(`Premalo ste blizu! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
           }
@@ -361,7 +358,8 @@
       if (isSubmitting) {
         const imeVal = document.getElementById('ime').value;
         const priimekVal = document.getElementById('priimek').value;
-        const nacinVal = document.querySelector('input[name="nacin"]:checked').value;
+        const nacinElem = document.querySelector('input[name="nacin"]:checked');
+        const nacinVal = nacinElem ? nacinElem.value : '';
 
         container.innerHTML = `
           <div class="success-card">
