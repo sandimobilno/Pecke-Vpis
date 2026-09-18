@@ -202,7 +202,6 @@
 </head>
 <body>
 
-  <!-- Skrito okno za pošiljanje podatkov brez preusmeritve -->
   <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 
   <div class="container" id="main-container">
@@ -247,7 +246,6 @@
         </div>
       </div>
 
-      <!-- Skrita polja za GPS koordinate -->
       <input type="hidden" id="lat" name="lat">
       <input type="hidden" id="lng" name="lng">
 
@@ -316,7 +314,7 @@
             submitBtn.disabled = false;
             submitBtn.textContent = "Zabeleži vpis";
           } else {
-            showStatus(`Premalo ste blizu! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke (dovoljeno do ${MAX_RADIUS_METERS} m).`, "error");
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
           }
