@@ -195,7 +195,7 @@
     }
 
     .btn-refresh {
-      background: none;
+      background: transparent !important;
       border: none;
       color: var(--primary-color);
       font-size: 13px;
@@ -204,14 +204,18 @@
       text-decoration: underline;
       padding: 5px;
       margin-top: 6px;
-      box-shadow: none;
+      box-shadow: none !important;
       width: auto;
     }
 
-    .btn-refresh:hover {
-      background: none;
+    .btn-refresh:hover,
+    .btn-refresh:focus,
+    .btn-refresh:active {
+      background: transparent !important;
       color: var(--primary-hover);
-      transform: none;
+      transform: none !important;
+      box-shadow: none !important;
+      outline: none;
     }
 
     .footer {
