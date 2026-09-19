@@ -194,6 +194,26 @@
       color: var(--primary-hover);
     }
 
+    .btn-refresh {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 5px;
+      margin-top: 6px;
+      box-shadow: none;
+      width: auto;
+    }
+
+    .btn-refresh:hover {
+      background: none;
+      color: var(--primary-hover);
+      transform: none;
+    }
+
     .footer {
       text-align: center;
       margin-top: 22px;
@@ -283,6 +303,10 @@
       <input type="hidden" id="lng" name="lng">
 
       <button type="submit" id="submit-btn" disabled>Pridobivanje GPS lokacije...</button>
+      <div style="text-align: center;">
+        <button type="button" id="refresh-gps-btn" class="btn-refresh" style="display:none;" onclick="checkLocation()">🔄 Osveži GPS lokacijo</button>
+      </div>
+
       <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml" target="_blank" class="btn btn-secondary">Lestvica</a>
     </form>
 
@@ -299,6 +323,7 @@
     const container = document.getElementById('main-container');
     const form = document.getElementById('vpis-form');
     const submitBtn = document.getElementById('submit-btn');
+    const refreshGpsBtn = document.getElementById('refresh-gps-btn');
     const statusBox = document.getElementById('status-box');
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');
@@ -311,6 +336,13 @@
     let isSubmitting = false;
     let currentDistance = null;
     let isLocationValid = false;
+
+    // Pomožna funkcija za preprečevanje XSS napadov
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
@@ -347,16 +379,15 @@
       const isEmailValid = isValidEmail(email);
       const isFormFilled = ime !== '' && priimek !== '' && isEmailValid && nacinElem !== null;
 
-      if (isFormFilled) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Zabeleži vzpon";
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Zabeleži vzpon";
-      }
+      submitBtn.disabled = !isFormFilled;
+      submitBtn.textContent = "Zabeleži vzpon";
     }
 
     function checkLocation() {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Pridobivanje GPS lokacije...";
+      refreshGpsBtn.style.display = 'none';
+
       if (!navigator.geolocation) {
         showStatus("Vaš brskalnik ne podpira geolokacije.", "error");
         submitBtn.textContent = "Geolokacija ni podprta";
@@ -367,14 +398,17 @@
         (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
+          const accuracy = Math.round(position.coords.accuracy);
 
           latInput.value = userLat;
           lngInput.value = userLng;
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
+          refreshGpsBtn.style.display = 'inline-block';
+
           if (currentDistance <= MAX_RADIUS_METERS) {
-            showStatus(`Nahajate se v območju vpisa (${currentDistance} m od točke).`, "success");
+            showStatus(`Nahajate se v območju vpisa (${currentDistance} m od točke, natančnost: ±${accuracy} m).`, "success");
             isLocationValid = true;
             validateForm();
           } else {
@@ -387,14 +421,19 @@
         (error) => {
           let errorMsg = "Napaka pri pridobivanju lokacije.";
           if (error.code === error.PERMISSION_DENIED) {
-            errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite dostop do lokacije v brskalniku.";
+            errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite dostop do lokacije v nastavitvah brskalnika.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            errorMsg = "GPS signal ni na voljo. Poskusite znova na odprtem prostoru.";
+          } else if (error.code === error.TIMEOUT) {
+            errorMsg = "Čas za pridobivanje GPS lokacije je potekel. Poskusite znova.";
           }
           showStatus(errorMsg, "error");
           isLocationValid = false;
           submitBtn.disabled = true;
           submitBtn.textContent = "Omogočite GPS lokacijo";
+          refreshGpsBtn.style.display = 'inline-block';
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
       );
     }
 
@@ -413,10 +452,10 @@
 
     iframe.addEventListener('load', function() {
       if (isSubmitting) {
-        const imeVal = imeInput.value;
-        const priimekVal = priimekInput.value;
+        const imeVal = escapeHtml(imeInput.value.trim());
+        const priimekVal = escapeHtml(priimekInput.value.trim());
         const nacinElem = document.querySelector('input[name="nacin"]:checked');
-        const nacinVal = nacinElem ? nacinElem.value : '';
+        const nacinVal = nacinElem ? escapeHtml(nacinElem.value) : '';
 
         container.innerHTML = `
           <div class="success-card">
