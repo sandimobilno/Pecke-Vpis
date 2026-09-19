@@ -441,6 +441,13 @@
       );
     }
 
+    // Samodejno popolnjevanje vnosnih polj iz LocalStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('pecke_ime')) imeInput.value = localStorage.getItem('pecke_ime');
+      if (localStorage.getItem('pecke_priimek')) priimekInput.value = localStorage.getItem('pecke_priimek');
+      if (localStorage.getItem('pecke_email')) emailInput.value = localStorage.getItem('pecke_email');
+    });
+
     imeInput.addEventListener('input', validateForm);
     priimekInput.addEventListener('input', validateForm);
     emailInput.addEventListener('input', validateForm);
@@ -449,6 +456,11 @@
     });
 
     form.addEventListener('submit', function(e) {
+      // Shranjevanje podatkov v LocalStorage ob oddaji
+      localStorage.setItem('pecke_ime', imeInput.value.trim());
+      localStorage.setItem('pecke_priimek', priimekInput.value.trim());
+      localStorage.setItem('pecke_email', emailInput.value.trim());
+
       submitBtn.disabled = true;
       submitBtn.textContent = "Pošiljanje...";
       isSubmitting = true;
