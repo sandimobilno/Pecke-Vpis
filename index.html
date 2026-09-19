@@ -381,7 +381,7 @@
             showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke vpisa (dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
-            submitBtn.textContent = "Vpis ni mogoč (prevelika razdalja)";
+            submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
           }
         },
         (error) => {
