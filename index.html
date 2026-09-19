@@ -409,6 +409,7 @@
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
+          // Dostop do lokacije je omogočen in uspešno pridobljen -> prikaži gumb za osveževanje
           refreshGpsBtn.style.display = 'inline-block';
 
           if (currentDistance <= MAX_RADIUS_METERS) {
@@ -435,7 +436,9 @@
           isLocationValid = false;
           submitBtn.disabled = true;
           submitBtn.textContent = "Omogočite GPS lokacijo";
-          refreshGpsBtn.style.display = 'inline-block';
+          
+          // Ker je prišlo do napake oz. dostop ni omogočen, gumb ostane skrit
+          refreshGpsBtn.style.display = 'none';
         },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
       );
