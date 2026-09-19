@@ -294,7 +294,7 @@
   <script>
     const TARGET_LAT = 46.522705476424164;
     const TARGET_LNG = 15.540909998268457;
-    const MAX_RADIUS_METERS = 50;
+    const MAX_RADIUS_METERS = 5000;
 
     const container = document.getElementById('main-container');
     const form = document.getElementById('vpis-form');
@@ -424,6 +424,7 @@
             <h2>Vpis uspešen!</h2>
             <p>Hvala, <strong>${imeVal} ${priimekVal}</strong>.<br>Vaš obisk je bil uspešno zabeležen.<br>(način: ${nacinVal}, oddaljenost: ${currentDistance} m)</p>
             <a href="https://sandimobilno.github.io/Pecke-Vpis/" class="btn">Nazaj na vpis</a>
+            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml" target="_blank" class="btn btn-secondary">Lestvica</a>
           </div>
         `;
         isSubmitting = false;
