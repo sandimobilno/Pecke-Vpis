@@ -387,7 +387,7 @@
         (error) => {
           let errorMsg = "Napaka pri pridobivanju lokacije.";
           if (error.code === error.PERMISSION_DENIED) {
-            errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite lokacijo v brskalniku.";
+            errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite dostop do lokacije v brskalniku.";
           }
           showStatus(errorMsg, "error");
           isLocationValid = false;
