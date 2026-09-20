@@ -416,7 +416,7 @@
       <input type="hidden" id="lat" name="lat">
       <input type="hidden" id="lng" name="lng">
 
-      <button type="submit" id="submit-btn" disabled>Pridobivanje GPS lokacije...</button>
+      <button type="button" id="submit-btn" disabled onclick="handleFormSubmit()">Pridobivanje GPS lokacije...</button>
 
       <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml" target="_blank" class="btn btn-secondary">Lestvica</a>
     </form>
@@ -483,7 +483,6 @@
     const emailInput = document.getElementById('email');
 
     let isSubmitting = false;
-    let isFinalValidationPassing = false; // Zastavica za dejansko oddajo
     let currentDistance = null;
     let isLocationValid = false;
 
@@ -625,34 +624,65 @@
       radio.addEventListener('change', validateForm);
     });
 
-    // POSODOBLJENO: Ponovno preverjanje lokacije ob kliku na gumb za oddajo
-    form.addEventListener('submit', function(e) {
-      if (!isFinalValidationPassing) {
-        e.preventDefault(); // Zaustavimo takojšnjo oddajo
+    // VAROVALO: Ročno voden postopek preverjanja ob kliku na gumb
+    function handleFormSubmit() {
+      const ime = imeInput.value.trim();
+      const priimek = priimekInput.value.trim();
+      const email = emailInput.value.trim();
+      const nacinElem = document.querySelector('input[name="nacin"]:checked');
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Preverjam trenutno lokacijo...";
+      if (!ime || !priimek || !isValidEmail(email) || !nacinElem) {
+        showStatus("Prosimo, pravilno izpolnite vsa polja.", "error");
+        return;
+      }
 
-        // Ponovno pridobimo trenutno GPS lokacijo v trenutku klika
-        checkLocation((success) => {
-          if (success) {
-            // Shranjevanje podatkov v LocalStorage
-            localStorage.setItem('pecke_ime', imeInput.value.trim());
-            localStorage.setItem('pecke_priimek', priimekInput.value.trim());
-            localStorage.setItem('pecke_email', emailInput.value.trim());
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Preverjam trenutno lokacijo...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const gpsTime = position.timestamp;
+          const currentTime = new Date().getTime();
+
+          // Če je podatek starejši od 15 sekund, ga zavrnemo
+          if (currentTime - gpsTime > 15000) {
+            showStatus("GPS podatek je zastarel. Prosimo, poskusite znova.", "error");
+            validateForm();
+            return;
+          }
+
+          currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
+
+          if (currentDistance <= MAX_RADIUS_METERS) {
+            latInput.value = userLat;
+            lngInput.value = userLng;
+
+            localStorage.setItem('pecke_ime', ime);
+            localStorage.setItem('pecke_priimek', priimek);
+            localStorage.setItem('pecke_email', email);
 
             submitBtn.textContent = "Pošiljanje...";
             isSubmitting = true;
-            isFinalValidationPassing = true;
 
-            // Ročno sprožimo dejansko pošiljanje obrazca
+            // Ročna oddaja obrazca
             form.submit();
           } else {
-            isFinalValidationPassing = false;
+            showStatus(`Vpis ni mogoč! Predaleč ste (${currentDistance} m od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
+            isLocationValid = false;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
+            refreshGpsBtn.style.display = 'inline-block';
           }
-        });
-      }
-    });
+        },
+        (error) => {
+          showStatus("Napaka pri preverjanju GPS lokacije ob oddaji.", "error");
+          validateForm();
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
 
     iframe.addEventListener('load', function() {
       if (isSubmitting) {
