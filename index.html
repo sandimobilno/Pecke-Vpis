@@ -347,6 +347,7 @@
     const emailInput = document.getElementById('email');
 
     let isSubmitting = false;
+    let isFinalValidationPassing = false; // Zastavica za dejansko oddajo
     let currentDistance = null;
     let isLocationValid = false;
 
@@ -396,17 +397,19 @@
       submitBtn.textContent = "Zabeleži vzpon";
     }
 
-    function checkLocation() {
+    function checkLocation(callback) {
       submitBtn.disabled = true;
-      submitBtn.textContent = "Pridobivanje GPS lokacije...";
+      submitBtn.textContent = "Verificiram GPS lokacijo...";
       refreshGpsBtn.style.display = 'none';
 
       if (!navigator.geolocation) {
         showStatus("Vaš brskalnik ne podpira geolokacije.", "error");
         submitBtn.textContent = "Geolokacija ni podprta";
+        if (callback) callback(false);
         return;
       }
 
+      // maximumAge: 0 prisili brskalnik, da pridobi povsem SVEŽO lokacijo
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userLat = position.coords.latitude;
@@ -418,18 +421,19 @@
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
-          // Dostop do lokacije je omogočen in uspešno pridobljen -> prikaži gumb za osveževanje
           refreshGpsBtn.style.display = 'inline-block';
 
           if (currentDistance <= MAX_RADIUS_METERS) {
             showStatus(`Nahajate se v območju vpisa (${currentDistance} m od točke, natančnost: ±${accuracy} m).`, "success");
             isLocationValid = true;
             validateForm();
+            if (callback) callback(true);
           } else {
             showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke vpisa (dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
+            if (callback) callback(false);
           }
         },
         (error) => {
@@ -445,9 +449,8 @@
           isLocationValid = false;
           submitBtn.disabled = true;
           submitBtn.textContent = "Omogočite GPS lokacijo";
-          
-          // Ker je prišlo do napake oz. dostop ni omogočen, gumb ostane skrit
           refreshGpsBtn.style.display = 'none';
+          if (callback) callback(false);
         },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
       );
@@ -467,15 +470,33 @@
       radio.addEventListener('change', validateForm);
     });
 
+    // POSODOBLJENO: Ponovno preverjanje lokacije ob kliku na gumb za oddajo
     form.addEventListener('submit', function(e) {
-      // Shranjevanje podatkov v LocalStorage ob oddaji
-      localStorage.setItem('pecke_ime', imeInput.value.trim());
-      localStorage.setItem('pecke_priimek', priimekInput.value.trim());
-      localStorage.setItem('pecke_email', emailInput.value.trim());
+      if (!isFinalValidationPassing) {
+        e.preventDefault(); // Zaustavimo takojšnjo oddajo
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Pošiljanje...";
-      isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Preverjam trenutno lokacijo...";
+
+        // Ponovno pridobimo trenutno GPS lokacijo v trenutku klika
+        checkLocation((success) => {
+          if (success) {
+            // Shranjevanje podatkov v LocalStorage
+            localStorage.setItem('pecke_ime', imeInput.value.trim());
+            localStorage.setItem('pecke_priimek', priimekInput.value.trim());
+            localStorage.setItem('pecke_email', emailInput.value.trim());
+
+            submitBtn.textContent = "Pošiljanje...";
+            isSubmitting = true;
+            isFinalValidationPassing = true;
+
+            // Ročno sprožimo dejansko pošiljanje obrazca
+            form.submit();
+          } else {
+            isFinalValidationPassing = false;
+          }
+        });
+      }
     });
 
     iframe.addEventListener('load', function() {
