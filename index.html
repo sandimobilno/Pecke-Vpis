@@ -635,7 +635,7 @@
           const gpsTime = position.timestamp;
           const currentTime = new Date().getTime();
 
-          if (currentTime - gpsTime > 15000) {
+          if (currentTime - gpsTime > 180000) {
             showStatus("GPS podatek je zastarel. Prosimo, poskusite znova.", "error");
             validateForm();
             return;
@@ -709,7 +709,7 @@
           showStatus("Napaka pri preverjanju GPS lokacije ob oddaji.", "error");
           validateForm();
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     }
 
