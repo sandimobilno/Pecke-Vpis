@@ -133,7 +133,7 @@
     #status-box {
       padding: 12px 14px;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       font-size: 13.5px;
       font-weight: 500;
       text-align: center;
@@ -203,7 +203,7 @@
       cursor: pointer;
       text-decoration: underline;
       padding: 5px;
-      margin: 12px 0 10px 0;
+      margin: 0 0 16px 0;
       box-shadow: none !important;
       width: auto;
     }
@@ -272,6 +272,10 @@
 
     <div id="status-box"></div>
 
+    <div style="text-align: center;">
+      <button type="button" id="refresh-gps-btn" class="btn-refresh" style="display:none;" onclick="checkLocation()">Osveži GPS lokacijo</button>
+    </div>
+
     <form id="vpis-form" action="https://script.google.com/macros/s/AKfycbw5UiudcrWdGJWrGImocIbsszl2rVXmOjVP3XQQyyyB3UrSHIKwkn5JgchZmBRfu30sNA/exec" method="POST" target="hidden_iframe">
       <div class="form-group">
         <input type="text" id="ime" name="ime" placeholder="Ime" required autocomplete="given-name">
@@ -307,9 +311,6 @@
       <input type="hidden" id="lng" name="lng">
 
       <button type="submit" id="submit-btn" disabled>Pridobivanje GPS lokacije...</button>
-      <div style="text-align: center;">
-        <button type="button" id="refresh-gps-btn" class="btn-refresh" style="display:none;" onclick="checkLocation()">Osveži GPS lokacijo</button>
-      </div>
 
       <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSzaUc7g_ZJH6-iSxHZJYvWLxzFvEiEROXZyBU-a4mieLdjiOgJ52TQHl6Qzh38qmKVLEn_gnU3PmD6/pubhtml" target="_blank" class="btn btn-secondary">Lestvica</a>
     </form>
