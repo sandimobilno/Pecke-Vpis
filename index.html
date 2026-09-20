@@ -283,7 +283,7 @@
       display: none;
     }
 
-    /* Modalno okno za pogoje uporabe */
+    /* Modalno okno za pogoje uporabe - prilagojeno za telefone */
     .terms-modal {
       display: none;
       position: fixed;
@@ -295,7 +295,7 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 15px;
     }
 
     .terms-modal-content {
@@ -303,10 +303,11 @@
       border-radius: 12px;
       max-width: 500px;
       width: 100%;
-      max-height: 80vh;
+      max-height: 85vh;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
     }
 
     .terms-modal-header {
@@ -315,6 +316,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .terms-modal-header h3 {
@@ -326,18 +328,20 @@
     .terms-modal-close {
       background: none;
       border: none;
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       color: var(--text-muted);
       cursor: pointer;
       padding: 0;
       width: auto;
       box-shadow: none;
+      line-height: 1;
     }
 
     .terms-modal-body {
       padding: 20px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       font-size: 13px;
       line-height: 1.6;
       color: var(--text-main);
@@ -452,7 +456,7 @@
 
         <h4>Pogodbena kazen in odškodninska odgovornost</h4>
         <p>Vsaka nepooblaščena uporaba, zajem kode, reprodukcija ali trženje aplikacije pomeni hudo kršitev pravic intelektualne lastnine in avtorskih pravic.</p>
-        <p>V primeru ugotovljene kršitve se uporabnik zavezuje lastniku plačati pogodbeno kazen v višini 100.000,00 EUR za vsako posamezno kršitev. Plačilo pogodbene kazni ne izključuje pravice lastnika do uveljavljanja celotne neposredne in posredne odškodnine ter sodne prepovedi nadaljnje uporabe.</p>
+        <p>V primeru ugotovljene kršitve se uporabnik zavezuje lastniku plačati pogodbeno kazen v višini 100.000 EUR za vsako posamezno kršitev. Plačilo pogodbene kazni ne izključuje pravice lastnika do uveljavljanja celotne neposredne in posredne odškodnine ter sodne prepovedi nadaljnje uporabe.</p>
 
         <h4>Veljavnost</h4>
         <p>Ta sporazum prične veljati z dnem prvega dostopa do aplikacije in zavezuje uporabnika še 10 let po prenehanju uporabe ali preklicu dostopa do aplikacije.</p>
@@ -486,10 +490,12 @@
     // Funkciji za odpiranje in zapiranje modalnega okna
     function openTermsModal() {
       document.getElementById('terms-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // Onemogoči pomikanje ozadja na mobilnih napravah
     }
 
     function closeTermsModal() {
       document.getElementById('terms-modal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // Ponovno omogoči pomikanje ozadja
     }
 
     // Zapri modalno okno, če uporabnik klikne izven njega
