@@ -232,8 +232,25 @@
       color: var(--text-muted);
     }
 
+    .terms-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .terms-link {
+      color: var(--primary-color);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .terms-link:hover {
+      color: var(--primary-hover);
+    }
+
     .copyright {
-      margin-top: 8px;
+      margin-top: 4px;
       font-size: 11px;
       color: var(--text-muted);
       opacity: 0.8;
@@ -264,6 +281,83 @@
 
     iframe#hidden_iframe {
       display: none;
+    }
+
+    /* Modalno okno za pogoje uporabe */
+    .terms-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .terms-modal-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .terms-modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .terms-modal-header h3 {
+      font-size: 16px;
+      color: var(--primary-color);
+      margin: 0;
+    }
+
+    .terms-modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0;
+      width: auto;
+      box-shadow: none;
+    }
+
+    .terms-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-main);
+      text-align: left;
+    }
+
+    .terms-modal-body h4 {
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: var(--primary-color);
+      font-size: 14px;
+    }
+
+    .terms-modal-body ul {
+      padding-left: 18px;
+      margin-bottom: 10px;
+    }
+
+    .terms-modal-body li {
+      margin-bottom: 6px;
     }
   </style>
 </head>
@@ -324,7 +418,45 @@
     </form>
 
     <div class="footer">
+      <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
       <p class="copyright">&copy; Aleksander Brečko</p>
+    </div>
+  </div>
+
+  <!-- Modalno okno s pogoji uporabe -->
+  <div id="terms-modal" class="terms-modal">
+    <div class="terms-modal-content">
+      <div class="terms-modal-header">
+        <h3>Pogoji uporabe</h3>
+        <button type="button" class="terms-modal-close" onclick="closeTermsModal()">&times;</button>
+      </div>
+      <div class="terms-modal-body">
+        <p><strong>POGOJI UPORABE IN SPORAZUM O VAROVANJO ZAUPNOSTI (NDA)</strong></p>
+        <br>
+        <p>Prosimo, da pred nadaljevanjem uporabe spletne aplikacije IZZIV za beleženje vzponov na določeni lokaciji pozorno preberete spodnje pogoje. Z vstopom in uporabo aplikacije potrjujete, da ste s pogoji seznanjeni ter se z njimi v celoti strinjate.</p>
+
+        <h4>Omejen dostop in intelektualna lastnina</h4>
+        <p>Spletna aplikacija IZZIV za beleženje vzponov na določeni lokaciji (v nadaljevanju: aplikacija) ter vsa z njo povezana tehnologija, izvorni podatki, oblikovanje, uporabniški vmesniki in koda (vključno s HTML, CSS, JavaScript in zalednimi skriptami) so v izključni lasti avtorja oziroma lastnika aplikacije.</p>
+        <p>Dostop do aplikacije je strogo omejen in odobren izključno pooblaščenim uporabnikom za namen uporabe storitve.</p>
+
+        <h4>Prepoved kopiranja, dekompilacije in trženja</h4>
+        <p>Uporabnik se izrecno obvezuje, da ne bo:</p>
+        <ul>
+          <li>Kopiral, spreminjal, reproduciral, dekompiliral, izvajal obratnega inženirstva (reverse engineering) ali kakor koli drugače poskušal pridobiti ali ekstrahirati izvorno kodo, strukturo ali vizualni vmesnik aplikacije.</li>
+          <li>Prodajal, dajal v najem, ponovno licenciral, javno distribuiral ali na kakršen koli drug način tržil aplikacije, njenih delov ali iz nje izpeljanih delov brez predhodnega izrecnega pisnega soglasja lastnika.</li>
+          <li>Omogočal dostopa do aplikacije nepooblaščenim tretjim osebam ali delil dostopnih podatkov.</li>
+        </ul>
+
+        <h4>Poslovna skrivnost in varovanje zaupnosti</h4>
+        <p>Vse informacije, tehnološke rešitve, delovanje in koncepti, prikazani v aplikaciji, štejejo za strogo poslovno skrivnost lastnika. Uporabnik se zavezuje vse pridobljene informacije varovati kot zaupne ter jih ne sme uporabiti za razvoj lastnih, konkurenčnih rešitev ali jih razkriti tretjim osebam.</p>
+
+        <h4>Pogodbena kazen in odškodninska odgovornost</h4>
+        <p>Vsaka nepooblaščena uporaba, zajem kode, reprodukcija ali trženje aplikacije pomeni hudo kršitev pravic intelektualne lastnine in avtorskih pravic.</p>
+        <p>V primeru ugotovljene kršitve se uporabnik zavezuje lastniku plačati pogodbeno kazen v višini 100.000,00 EUR za vsako posamezno kršitev. Plačilo pogodbene kazni ne izključuje pravice lastnika do uveljavljanja celotne neposredne in posredne odškodnine ter sodne prepovedi nadaljnje uporabe.</p>
+
+        <h4>Veljavnost</h4>
+        <p>Ta sporazum prične veljati z dnem prvega dostopa do aplikacije in zavezuje uporabnika še 10 let po prenehanju uporabe ali preklicu dostopa do aplikacije.</p>
+      </div>
     </div>
   </div>
 
@@ -350,6 +482,23 @@
     let isFinalValidationPassing = false; // Zastavica za dejansko oddajo
     let currentDistance = null;
     let isLocationValid = false;
+
+    // Funkciji za odpiranje in zapiranje modalnega okna
+    function openTermsModal() {
+      document.getElementById('terms-modal').style.display = 'flex';
+    }
+
+    function closeTermsModal() {
+      document.getElementById('terms-modal').style.display = 'none';
+    }
+
+    // Zapri modalno okno, če uporabnik klikne izven njega
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('terms-modal');
+      if (event.target === modal) {
+        closeTermsModal();
+      }
+    });
 
     // Pomožna funkcija za preprečevanje XSS napadov
     function escapeHtml(text) {
