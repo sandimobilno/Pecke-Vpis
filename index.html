@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Izziv Pečke - vpis vzpona</title>
+  <!-- Knjižnica za Font Awesome ikone -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     :root {
       --primary-color: #2e7d32;
@@ -128,6 +130,10 @@
       color: var(--text-muted);
       background-color: #fafafa;
       transition: all 0.2s ease;
+    }
+
+    .radio-option label i {
+      margin-right: 5px;
     }
 
     .radio-option input:checked + label {
@@ -393,15 +399,15 @@
         <div class="radio-group">
           <div class="radio-option">
             <input type="radio" id="pes" name="nacin" value="Peš" required>
-            <label for="pes">Pohod</label>
+            <label for="pes"><i class="fa-solid fa-person-hiking"></i>Pohod</label>
           </div>
           <div class="radio-option">
             <input type="radio" id="kolo" name="nacin" value="Kolo">
-            <label for="kolo">Kolo</label>
+            <label for="kolo"><i class="fa-solid fa-bicycle"></i>Kolo</label>
           </div>
           <div class="radio-option">
             <input type="radio" id="ekolo" name="nacin" value="eKolo">
-            <label for="ekolo">eKolo</label>
+            <label for="ekolo"><i class="fa-solid fa-bolt"></i>eKolo</label>
           </div>
         </div>
       </div>
