@@ -422,7 +422,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 260921&#8203;.1658 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 260923&#8203;.2112 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -651,9 +651,11 @@
           const currentTime = new Date().getTime();
 
           if (currentTime - gpsTime > 180000) {
-            showStatus("GPS podatek je zastarel. Prosimo, poskusite znova.", "error");
-            validateForm();
-            return;
+  showStatus("GPS podatek je zastarel. Stran se bo samodejno osvežila...", "error");
+  setTimeout(() => {
+    window.location.reload();
+  }, 1500);
+  return;
           }
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
