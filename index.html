@@ -475,7 +475,7 @@
   <script>
     const TARGET_LAT = 46.522705476424164;
     const TARGET_LNG = 15.540909998268457;
-    const MAX_RADIUS_METERS = 60;
+    const MAX_RADIUS_METERS = 6000;
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5UiudcrWdGJWrGImocIbsszl2rVXmOjVP3XQQyyyB3UrSHIKwkn5JgchZmBRfu30sNA/exec";
 
     const container = document.getElementById('main-container');
@@ -628,6 +628,13 @@
       radio.addEventListener('change', validateForm);
     });
 
+    // Ko uporabnik začne tipkati v poljih, se umakne morebitna rdeča obroba napake
+    document.querySelectorAll('#ime, #priimek, #email').forEach(element => {
+      element.addEventListener('input', function() {
+        this.style.borderColor = ''; 
+      });
+    });
+
     // ROČNO VODEN POSTOPEK PREVERJANJA IN ODDAJE PREKO FETCH API
     function handleFormSubmit() {
       const ime = imeInput.value.trim();
@@ -635,8 +642,41 @@
       const email = emailInput.value.trim();
       const nacinElem = document.querySelector('input[name="nacin"]:checked');
 
-      if (!ime || !priimek || !isValidEmail(email) || !nacinElem) {
-        showStatus("Prosimo, pravilno izpolnite vsa polja.", "error");
+      // Počistimo prejšnje rdeče obrobe
+      imeInput.style.borderColor = '';
+      priimekInput.style.borderColor = '';
+      emailInput.style.borderColor = '';
+
+      const nedovoljeniZnakiImePriimek = /[^\p{L}\s]/u;
+      let imaNapako = false;
+
+      // Preverjanje imena
+      if (nedovoljeniZnakiImePriimek.test(ime)) {
+        imeInput.style.borderColor = 'red';
+        imeInput.focus();
+        imaNapako = true;
+      }
+
+      // Preverjanje priimka
+      if (nedovoljeniZnakiImePriimek.test(priimek)) {
+        priimekInput.style.borderColor = 'red';
+        if (!imaNapako) {
+          priimekInput.focus();
+        }
+        imaNapako = true;
+      }
+
+      // Preverjanje e-pošte
+      if (!isValidEmail(email)) {
+        emailInput.style.borderColor = 'red';
+        if (!imaNapako) {
+          emailInput.focus();
+        }
+        imaNapako = true;
+      }
+
+      if (imaNapako || !nacinElem) {
+        showStatus("Napaka: Prosimo, preverite vnose. Ime in priimek lahko vsebujeta samo črke, e-poštni naslov pa mora biti veljaven.", "error");
         return;
       }
 
@@ -651,11 +691,11 @@
           const currentTime = new Date().getTime();
 
           if (currentTime - gpsTime > 180000) {
-  showStatus("GPS podatek je zastarel. Stran se bo samodejno osvežila...", "error");
-  setTimeout(() => {
-    window.location.reload();
-  }, 1500);
-  return;
+            showStatus("GPS podatek je zastarel. Stran se bo samodejno osvežila...", "error");
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+            return;
           }
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
