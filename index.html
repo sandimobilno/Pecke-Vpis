@@ -422,7 +422,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 261023&#8203;.1829 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 261104&#8203;.2120 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -473,8 +473,8 @@
   </div>
 
   <script>
-    const TARGET_LAT = 46.522705476424164;
-    const TARGET_LNG = 15.540909998268457;
+    const TARGET_LAT = 46.522645672254114;
+    const TARGET_LNG = 15.540822943716964;
     const MAX_RADIUS_METERS = 60;
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5UiudcrWdGJWrGImocIbsszl2rVXmOjVP3XQQyyyB3UrSHIKwkn5JgchZmBRfu30sNA/exec";
 
@@ -587,7 +587,7 @@
             validateForm();
             if (callback) callback(true);
           } else {
-            showStatus(`Predaleč ste! Nahajate se ${currentDistance} m od točke vpisa (dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je ${MAX_RADIUS_METERS} m.`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
@@ -687,6 +687,7 @@
         (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
+          const accuracy = Math.round(position.coords.accuracy);
           const gpsTime = position.timestamp;
           const currentTime = new Date().getTime();
 
@@ -755,7 +756,7 @@
             });
 
           } else {
-            showStatus(`Vpis ni mogoč! Predaleč ste (${currentDistance} m od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS} m).`, "error");
+            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je ${MAX_RADIUS_METERS} m.`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
