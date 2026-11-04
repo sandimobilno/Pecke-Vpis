@@ -422,7 +422,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 261104&#8203;.2120 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 261104&#8203;.2136 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -587,7 +587,7 @@
             validateForm();
             if (callback) callback(true);
           } else {
-            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je ${MAX_RADIUS_METERS} m.`, "error");
+            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je do ${MAX_RADIUS_METERS} m.`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
@@ -756,7 +756,7 @@
             });
 
           } else {
-            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je ${MAX_RADIUS_METERS} m.`, "error");
+            showStatus(`Predaleč ste, (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m) dovoljeno je do ${MAX_RADIUS_METERS} m.`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
