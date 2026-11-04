@@ -582,12 +582,12 @@
           refreshGpsBtn.style.display = 'inline-block';
 
           if (currentDistance <= MAX_RADIUS_METERS) {
-            showStatus(`Nahajate se v območju vpisa (${currentDistance}\u00A0m od točke, natančnost: ±${accuracy}\u00A0m).`, "success");
+            showStatus(`Nahajate se v območju vpisa! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "success");
             isLocationValid = true;
             validateForm();
             if (callback) callback(true);
           } else {
-            showStatus(`Predaleč ste, (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m) dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m.`, "error");
+            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
@@ -756,7 +756,7 @@
             });
 
           } else {
-            showStatus(`Predaleč ste, (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m) dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m.`, "error");
+            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
