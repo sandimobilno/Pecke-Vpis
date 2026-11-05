@@ -231,6 +231,11 @@
       outline: none;
     }
 
+    /* Razmik za ikono nalaganja v gumbu */
+    .btn-spinner {
+      margin-right: 8px;
+    }
+
     .footer {
       text-align: center;
       margin-top: 22px;
@@ -422,7 +427,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 261104&#8203;.2136 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 261105&#8203;.2227 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -475,7 +480,7 @@
   <script>
     const TARGET_LAT = 46.522645672254114;
     const TARGET_LNG = 15.540822943716964;
-    const MAX_RADIUS_METERS = 60;
+    const MAX_RADIUS_METERS = 6000;
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5UiudcrWdGJWrGImocIbsszl2rVXmOjVP3XQQyyyB3UrSHIKwkn5JgchZmBRfu30sNA/exec";
 
     const container = document.getElementById('main-container');
@@ -709,7 +714,8 @@
             localStorage.setItem('pecke_priimek', priimek);
             localStorage.setItem('pecke_email', email);
 
-            submitBtn.textContent = "Pošiljanje...";
+            // Dodana vizualna animacija (spinner) z vmesnim besedilom
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin btn-spinner"></i>Pošiljanje...';
 
             const payload = {
               ime: ime,
