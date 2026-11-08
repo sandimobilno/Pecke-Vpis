@@ -79,7 +79,7 @@
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 14px; /* Povečano za eno stopnjo */
       color: var(--text-main);
       text-transform: none;
       letter-spacing: 0.5px;
@@ -211,7 +211,7 @@
       background: transparent !important;
       border: none;
       color: var(--primary-color);
-      font-size: 13px;
+      font-size: 14px; /* Povečano za eno stopnjo */
       font-weight: 600;
       cursor: pointer;
       text-decoration: underline;
@@ -221,14 +221,20 @@
       width: auto;
     }
 
-    .btn-refresh:hover,
-    .btn-refresh:focus,
-    .btn-refresh:active {
+    .btn-refresh:hover:not(:disabled),
+    .btn-refresh:focus:not(:disabled),
+    .btn-refresh:active:not(:disabled) {
       background: transparent !important;
       color: var(--primary-hover);
       transform: none !important;
       box-shadow: none !important;
       outline: none;
+    }
+
+    .btn-refresh:disabled {
+      color: #b0bec5 !important;
+      cursor: not-allowed;
+      text-decoration: none;
     }
 
     /* Razmik za ikono nalaganja v gumbu */
@@ -383,7 +389,8 @@
     <div id="status-box"></div>
 
     <div style="text-align: center;">
-      <button type="button" id="refresh-gps-btn" class="btn-refresh" style="display:none;" onclick="checkLocation()">Osveži GPS lokacijo</button>
+      <!-- Gumb je vedno prisoten v strukturi za stabilen layout -->
+      <button type="button" id="refresh-gps-btn" class="btn-refresh" onclick="checkLocation()">Osveži GPS lokacijo</button>
     </div>
 
     <form id="vpis-form" onsubmit="event.preventDefault(); handleFormSubmit();">
@@ -427,7 +434,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 261105&#8203;.2231 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 261108&#8203;.2232 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -480,7 +487,7 @@
   <script>
     const TARGET_LAT = 46.522645672254114;
     const TARGET_LNG = 15.540822943716964;
-    const MAX_RADIUS_METERS = 60;
+    const MAX_RADIUS_METERS = 6000;
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5UiudcrWdGJWrGImocIbsszl2rVXmOjVP3XQQyyyB3UrSHIKwkn5JgchZmBRfu30sNA/exec";
 
     const container = document.getElementById('main-container');
@@ -564,11 +571,15 @@
     function checkLocation(callback) {
       submitBtn.disabled = true;
       submitBtn.textContent = "Verificiram GPS lokacijo...";
-      refreshGpsBtn.style.display = 'none';
+      
+      // Onemogočimo gumb in zagotovimo, da je viden
+      refreshGpsBtn.disabled = true;
+      refreshGpsBtn.style.visibility = 'visible';
 
       if (!navigator.geolocation) {
         showStatus("Vaš brskalnik ne podpira geolokacije.", "error");
         submitBtn.textContent = "Geolokacija ni podprta";
+        refreshGpsBtn.disabled = false;
         if (callback) callback(false);
         return;
       }
@@ -584,7 +595,8 @@
 
           currentDistance = Math.round(getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG));
 
-          refreshGpsBtn.style.display = 'inline-block';
+          // Ponovno omogočimo gumb za osveževanje
+          refreshGpsBtn.disabled = false;
 
           if (currentDistance <= MAX_RADIUS_METERS) {
             showStatus(`Nahajate se v območju vpisa! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "success");
@@ -603,16 +615,20 @@
           let errorMsg = "Napaka pri pridobivanju lokacije.";
           if (error.code === error.PERMISSION_DENIED) {
             errorMsg = "Dostop do GPS lokacije je zavrnjen. Prosimo, omogočite dostop do lokacije v nastavitvah brskalnika.";
+            // Gumb skrijemo, a ohranimo njegov prostor, da nič ne poskakuje
+            refreshGpsBtn.style.visibility = 'hidden';
           } else if (error.code === error.POSITION_UNAVAILABLE) {
             errorMsg = "GPS signal ni na voljo. Poskusite znova na odprtem prostoru.";
+            refreshGpsBtn.disabled = false;
           } else if (error.code === error.TIMEOUT) {
             errorMsg = "Čas za pridobivanje GPS lokacije je potekel. Poskusite znova.";
+            refreshGpsBtn.disabled = false;
           }
           showStatus(errorMsg, "error");
           isLocationValid = false;
           submitBtn.disabled = true;
           submitBtn.textContent = "Omogočite GPS lokacijo";
-          refreshGpsBtn.style.display = 'none';
+
           if (callback) callback(false);
         },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
@@ -687,6 +703,7 @@
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Preverjam trenutno lokacijo...";
+      refreshGpsBtn.disabled = true;
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -753,11 +770,13 @@
                 `;
               } else {
                 showStatus(data.message || "Prišlo je do napake pri zapisu.", "error");
+                refreshGpsBtn.disabled = false;
                 validateForm();
               }
             })
             .catch(error => {
               showStatus("Napaka pri povezavi s strežnikom. Poskusite znova.", "error");
+              refreshGpsBtn.disabled = false;
               validateForm();
             });
 
@@ -766,11 +785,12 @@
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
-            refreshGpsBtn.style.display = 'inline-block';
+            refreshGpsBtn.disabled = false;
           }
         },
         (error) => {
           showStatus("Napaka pri preverjanju GPS lokacije ob oddaji.", "error");
+          refreshGpsBtn.disabled = false;
           validateForm();
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
