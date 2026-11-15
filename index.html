@@ -434,7 +434,7 @@
 
     <div class="footer">
       <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
-      <p class="copyright">Ver. 261108&#8203;.2238 | &copy; Aleksander Brečko</p>
+      <p class="copyright">Ver. 261115&#8203;.2139 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
@@ -668,7 +668,7 @@
       priimekInput.style.borderColor = '';
       emailInput.style.borderColor = '';
 
-      const nedovoljeniZnakiImePriimek = /[^\p{L}\s]/u;
+      const nedovoljeniZnakiImePriimek = /[^\p{L}\s'’–\-]/u;
       let imaNapako = false;
 
       // Preverjanje imena
@@ -697,7 +697,7 @@
       }
 
       if (imaNapako || !nacinElem) {
-        showStatus("Napaka: Prosimo, preverite vnose. Ime in priimek lahko vsebujeta samo črke, e-poštni naslov pa mora biti veljaven.", "error");
+        showStatus("Napaka: Prosimo, preverite vnose. Ime in priimek lahko vsebujeta samo črke, presledke, vezaj in opuščaj, e-poštni naslov pa mora biti veljaven.", "error");
         return;
       }
 
