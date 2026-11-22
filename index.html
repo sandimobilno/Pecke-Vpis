@@ -45,7 +45,7 @@
       background-color: var(--card-bg);
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      padding: 20px 28px 24px 28px;
+      padding: 20px 28px 18px 28px;
       width: 100%;
       max-width: 440px;
       margin-top: 10px;
@@ -166,6 +166,14 @@
       border: 1px solid var(--success-border);
     }
 
+    .consent-notice {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
     button, .btn {
       display: inline-block;
       width: 100%;
@@ -244,15 +252,9 @@
 
     .footer {
       text-align: center;
-      margin-top: 22px;
+      margin-top: 12px;
       font-size: 12px;
       color: var(--text-muted);
-    }
-
-    .terms-text {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
     }
 
     .terms-link {
@@ -267,7 +269,7 @@
     }
 
     .copyright {
-      margin-top: 4px;
+      margin-top: 0;
       font-size: 11px;
       color: var(--text-muted);
       opacity: 0.8;
@@ -296,7 +298,7 @@
       color: var(--text-main);
     }
 
-    /* Modalno okno za pogoje uporabe - prilagojeno za telefone */
+    /* Modalno okno za pravila in zasebnost - prilagojeno za telefone */
     .terms-modal {
       display: none;
       position: fixed;
@@ -403,8 +405,8 @@
       </div>
 
       <div class="form-group">
-  <input type="email" id="email" name="email" placeholder="E-poštni naslov" maxlength="100" required autocomplete="email">
-</div>
+        <input type="email" id="email" name="email" placeholder="E-poštni naslov" maxlength="100" required autocomplete="email">
+      </div>
 
       <div class="form-group">
         <label class="section-label">Izberite način vzpona</label>
@@ -427,59 +429,85 @@
       <input type="hidden" id="lat" name="lat">
       <input type="hidden" id="lng" name="lng">
 
+      <p class="consent-notice">
+        S klikom se strinjate s <span class="terms-link" role="button" tabindex="0" onclick="openModal('rules-modal')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('rules-modal');}">Pravili</span> in z obdelavo podatkov ter javno objavo obiska (ime, priimek, kraj, čas; izjemoma zamaskiran e-naslov). Več v <span class="terms-link" role="button" tabindex="0" onclick="openModal('privacy-modal')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('privacy-modal');}">zasebnosti</span>.
+      </p>
+
       <button type="button" id="submit-btn" disabled onclick="handleFormSubmit()">Pridobivanje GPS lokacije...</button>
 
       <a href="https://sandimobilno.github.io/Lestvica-vzponov/" target="_blank" class="btn btn-secondary">Lestvica</a>
     </form>
 
     <div class="footer">
-      <p class="terms-text">Z uporabo te aplikacije se strinjate s <span class="terms-link" onclick="openTermsModal()">pogoji uporabe</span>!</p>
       <p class="copyright">Ver. 261116&#8203;.2319 | &copy; Aleksander Brečko</p>
     </div>
   </div>
 
-  <!-- Modalno okno s pogoji uporabe -->
-  <div id="terms-modal" class="terms-modal">
+  <!-- Modalno okno s pravili uporabe -->
+  <div id="rules-modal" class="terms-modal">
     <div class="terms-modal-content">
       <div class="terms-modal-header">
-        <h3>Pogoji uporabe</h3>
-        <button type="button" class="terms-modal-close" onclick="closeTermsModal()">&times;</button>
+        <h3>Pravila uporabe in pogoji</h3>
+        <button type="button" class="terms-modal-close" onclick="closeModal('rules-modal')">&times;</button>
       </div>
       <div class="terms-modal-body">
-        <p><strong>POGOJI UPORABE IN SPORAZUM O VAROVANJU ZAUPNOSTI (NDA)</strong></p>
+        <p><strong>PRAVILA UPORABE IN POGOJI SPLETNE APLIKACIJE IZZIV</strong></p>
         <br>
-        <p>Prosimo, da pred nadaljevanjem uporabe spletne aplikacije IZZIV za beleženje vzponov na določeni lokaciji pozorno preberete spodnje pogoje. Z vstopom in uporabo aplikacije potrjujete, da ste s pogoji seznanjeni ter se z njimi v celoti strinjate.</p>
+        <p>Prosimo, da pred nadaljevanjem uporabe spletne aplikacije IZZIV za beleženje vzponov pozorno preberete spodnja pravila. Z uporabo aplikacije in oddajo podatkov potrjujete, da ste s temi pravili seznanjeni ter se z njimi v celoti strinjate.</p>
 
-        <h4>Zbiranje in objava podatkov</h4>
-        <p>Z uporabo aplikacije se uporabnik izrecno strinja z zbiranjem, obdelavo in javno objavo naslednjih podatkov za namen vodenja evidence ter objave na javni lestvici vzponov:</p>
+        <h4>1. Namen aplikacije in evidenca obiskov</h4>
+        <p>Spletna aplikacija Izziv je namenjena beleženju, vodenju evidence in javnemu prikazovanju vzponov/obiskov na določeno lokacijo. Uporabnik jamči za točnost vnesenih podatkov ob vsaki oddaji prijave.</p>
+
+        <h4>2. Intelektualna lastnina in avtorske pravice</h4>
+        <p>Spletna aplikacija Izziv, vključno z vso programsko kodo (HTML, CSS, JavaScript, zaledne skripte), arhitekturo, oblikovanjem in vizualnimi elementi, je izključna last avtorja.</p>
+        <p>Vse pravice so pridržane. Kakršnokoli kopiranje, reproduciranje, dekompiliranje, obratni inženiring (reverse engineering) ali nepooblaščena distribucija aplikacije ali njenih delov brez predhodnega pisnega dovoljenja avtorja je strogo prepovedana in pomeni kršitev avtorskih pravic.</p>
+
+        <h4>3. Prepoved nepooblaščene komercialne uporabe</h4>
+        <p>Aplikacija in njeni tehnološki koncepti se ne smejo uporabljati v komercialne namene, preprodajati ali uporabljati za postavitev konkurenčnih rešitev s strani nepooblaščenih tretjih oseb. Vsaka zloraba sistema ali nepooblaščeno prisvajanje kode se preganja v skladu z Zakonom o avtorski in sorodnih pravicah ter splošnimi odškodninskimi predpisi.</p>
+
+        <h4>4. Omejitev odgovornosti</h4>
+        <p>Aplikacija deluje »kot je«. Avtor ne prevzema nikakršne odgovornosti za morebitne tehnične motnje, izgubo podatkov, nedosegljivost storitve ali morebitne netočnosti pri vnosu podatkov s strani uporabnikov. Uporaba aplikacije poteka na lastno odgovornost.</p>
+
+        <h4>5. Veljavnost</h4>
+        <p>Ta pravila pričnejo veljati z dnem prve uporabe aplikacije in veljajo do preklica oziroma spremembe objavljenih pogojev.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modalno okno s politiko zasebnosti -->
+  <div id="privacy-modal" class="terms-modal">
+    <div class="terms-modal-content">
+      <div class="terms-modal-header">
+        <h3>Politika zasebnosti (GDPR)</h3>
+        <button type="button" class="terms-modal-close" onclick="closeModal('privacy-modal')">&times;</button>
+      </div>
+      <div class="terms-modal-body">
+        <p><strong>POLITIKA ZASEBNOSTI IN VARSTVO OSEBNIH PODATKOV (GDPR)</strong></p>
+        <br>
+        <p>Ta politika zasebnosti pojasnjuje, kako spletna aplikacija IZZIV zbira, obdeluje in varuje osebne podatke obiskovalcev.</p>
+
+        <h4>1. Zbiranje podatkov</h4>
+        <p>Z uporabo aplikacije in oddajo prijave obiska se zbirajo naslednji podatki:</p>
         <ul>
-          <li>Ime in priimek obiskovalca</li>
-          <li>Datum, čas in lokacija obiska</li>
+          <li>Ime in priimek</li>
           <li>E-poštni naslov (eMail)</li>
+          <li>Čas obiska (čas zadnjega zabeleženega obiska)</li>
+          <li>Lokacija obiska (vključno s preverjanjem GPS koordinat)</li>
           <li>Način vzpona</li>
         </ul>
 
-        <h4>Omejen dostop in intelektualna lastnina</h4>
-        <p>Spletna aplikacija IZZIV za beleženje vzponov na določeni lokaciji (v nadaljevanju: aplikacija) ter vsa z njo povezana tehnologija, izvorni podatki, oblikovanje, uporabniški vmesniki in koda (vključno s HTML, CSS, JavaScript in zalednimi skriptami) so v izključni lasti avtorja oziroma lastnika aplikacije.</p>
-        <p>Dostop do aplikacije je strogo omejen in odobren izključno pooblaščenim uporabnikom za namen uporabe storitve.</p>
-
-        <h4>Prepoved kopiranja, dekompilacije in trženja</h4>
-        <p>Uporabnik se izrecno obvezuje, da ne bo:</p>
+        <h4>2. Namen obdelave in javna objava</h4>
+        <p>Zbrani podatki se obdelujejo izključno za namen vodenja evidence obiskov in prikaza na javni lestvici vzponov.</p>
         <ul>
-          <li>Kopiral, spreminjal, reproduciral, dekompiliral, izvajal obratnega inženirstva (reverse engineering) ali kakor koli drugače poskušal pridobiti ali ekstrahirati izvorno kodo, strukturo ali vizualni vmesnik aplikacije.</li>
-          <li>Prodajal, dajal v najem, ponovno licenciral, javno distribuiral ali na kakršen koli drug način tržil aplikacije, njenih delov ali iz nje izpeljanih delov brez predhodnega izrecnega pisnega soglasja lastnika.</li>
-          <li>Omogočal dostopa do aplikacije nepooblaščenim tretjim osebam ali delil dostopnih podatkov.</li>
+          <li><strong>Javnost podatkov:</strong> Ime, priimek, kraj in čas zadnjega obiska so javno objavljeni na lestvici vzponov.</li>
+          <li><strong>E-poštni naslov:</strong> E-poštni naslov je javno neviden, razen v redkih izjemah (npr. zaradi razločevanja soimenjakov), ko se izjemoma objavi v zamaskirani obliki (npr. a***r@primer.si).</li>
         </ul>
 
-        <h4>Poslovna skrivnost in varovanje zaupnosti</h4>
-        <p>Vse informacije, tehnološke rešitve, delovanje in koncepti, prikazani v aplikaciji, štejejo za strogo poslovno skrivnost lastnika. Uporabnik se zavezuje vse pridobljene informacije varovati kot zaupne ter jih ne sme uporabiti za razvoj lastnih, konkurenčnih rešitev ali jih razkriti tretjim osebam.</p>
+        <h4>3. Pravna podlaga in privolitev</h4>
+        <p>Uporabnik z aktivnim dejanjem (klikom na gumb za potrditev obiska ob predhodnem jasnem obvestilu) soglaša z zbiranjem, obdelavo in zgoraj navedeno javno objavo podatkov za namen evidence obiska.</p>
 
-        <h4>Pogodbena kazen in odškodninska odgovornost</h4>
-        <p>Vsaka nepooblaščena uporaba, zajem kode, reprodukcija ali trženje aplikacije pomeni hudo kršitev pravic intelektualne lastnine in avtorskih pravic.</p>
-        <p>V primeru ugotovljene kršitve se uporabnik zavezuje lastniku plačati pogodbeno kazen v višini 100.000,00 EUR za vsako posamezno kršitev. Plačilo pogodbene kazni ne izključuje pravice lastnika do uveljavljanja celotne neposredne in posredne odškodnine ter sodne prepovedi nadaljnje uporabe.</p>
-
-        <h4>Veljavnost</h4>
-        <p>Ta sporazum prične veljati z dnem prvega dostopa do aplikacije in zavezuje uporabnika še 10 let po prenehanju uporabe ali preklicu dostopa do aplikacije.</p>
+        <h4>4. Hramba podatkov in pravice uporabnika</h4>
+        <p>Podatki se hranijo toliko časa, kolikor je potrebno za delovanje evidence obiskov oziroma do preklica s strani uporabnika. Uporabnik lahko kadarkoli zahteva vpogled, popravek ali izbris svojih osebnih podatkov.</p>
       </div>
     </div>
   </div>
@@ -505,21 +533,27 @@
     let currentDistance = null;
     let isLocationValid = false;
 
-    // Funkciji za odpiranje in zapiranje modalnega okna
-    function openTermsModal() {
-      document.getElementById('terms-modal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+    // Funkciji za odpiranje in zapiranje modalnih oken
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
     }
 
-    function closeTermsModal() {
-      document.getElementById('terms-modal').style.display = 'none';
-      document.body.style.overflow = 'auto';
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
     }
 
     window.addEventListener('click', function(event) {
-      const modal = document.getElementById('terms-modal');
-      if (event.target === modal) {
-        closeTermsModal();
+      if (event.target && event.target.classList && event.target.classList.contains('terms-modal')) {
+        event.target.style.display = 'none';
+        document.body.style.overflow = 'auto';
       }
     });
 
@@ -599,12 +633,12 @@
           refreshGpsBtn.disabled = false;
 
           if (currentDistance <= MAX_RADIUS_METERS) {
-            showStatus(`Nahajate se v območju vpisa! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "success");
+            showStatus(`Nahajate se v območju vpisa! (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m)`, "success");
             isLocationValid = true;
             validateForm();
             if (callback) callback(true);
           } else {
-            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "error");
+            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS} m! (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m)`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
@@ -781,7 +815,7 @@
             });
 
           } else {
-            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS}\u00A0m! (${currentDistance}\u00A0m od točke vpisa, natančnost: ±${accuracy}\u00A0m)`, "error");
+            showStatus(`Predaleč ste od točke vpisa, dovoljeno je do ${MAX_RADIUS_METERS} m! (${currentDistance} m od točke vpisa, natančnost: ±${accuracy} m)`, "error");
             isLocationValid = false;
             submitBtn.disabled = true;
             submitBtn.textContent = "Vpis ni mogoč (predaleč ste)";
